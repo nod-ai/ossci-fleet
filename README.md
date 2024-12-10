@@ -1,4 +1,4 @@
-# OSCCI Cluster User Guide
+# OSSCI Cluster User Guide
 
 This guide describes how to setup your environment from anywhere on **AMD network or VPN** to access and utilize the AMD OSCCI Cluster.
 All the MI300x nodes in this cluster are on an AMD service called Conductor. This allows them to be on the same corporate network and be able to communicate with each other even though geographically, they are located across the country. We have setup infrastructure so that these nodes are behind a kubernetes scheduler. This provides us with an easy way to allocate MI300 resources on demand instead of reserving and blocking off whole nodes. The goal is to improve our utilization of this scarce resource while making it available to a much larger crowd.
