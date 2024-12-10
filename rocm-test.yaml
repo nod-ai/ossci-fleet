@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: rocm-test-job
+  namespace: dev
+spec:
+  template:
+    spec:
+      nodeSelector:
+        dev: "true"
+      containers:
+      - name: rocm-test-container
+        image: rocm/tensorflow:latest
+        command: ["/bin/bash", "-c"]
+        args:
+        - |
+          rocminfo && echo "ROCm is working!" || echo "ROCm is not working!";
+        resources:
+          limits:
+            amd.com/gpu: 1
+      restartPolicy: Never
+  backoffLimit: 0
