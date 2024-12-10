@@ -10,7 +10,7 @@ Run these two commands to pull in all the required dependencies and configuratio
 ./setup_k8s.sh
 export KUBECONFIG=anon.conf
 ```
-The script assumes you are on a linux machine. If not, please refer to this guide to get setup: https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
+The script assumes you are on a linux machine. If not, please refer to this guide to get setup: https://kubernetes.io/docs/tasks/tools/install-kubectl-windows/
 
 ## Step 2: Run Jobs on the Cluster
 
