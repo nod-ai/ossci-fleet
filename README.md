@@ -34,7 +34,7 @@ This script will dispatch the job, display logs when finished, and delete the jo
 
 This job takes a bit more time (~10 minutes for the whole e2e compilation and inference flow), but is probably more in line with what you will be using the cluster for.
 Again, please change the job name [here](https://github.com/saienduri/ossci-cluster/blob/main/rocm-test.yaml#L4) to include your username. This is a shared namespace, so it helps avoid any job contention/conflict with other jobs with the same name and helps us track better as well.
-Please take a look [here](https://github.com/saienduri/ossci-cluster/blob/main/shark-test.yaml#L25) to see how you would setup environments for running different workloads.
+Please take a look [here](https://github.com/saienduri/ossci-cluster/blob/main/shark-test.yaml#L25) if you are interested in how you would setup environments and run different workloads.
 
 To run the job:
 ```
