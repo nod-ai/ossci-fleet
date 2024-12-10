@@ -4,7 +4,7 @@ This guide describes how to setup your environment from anywhere on AMD network 
 All the MI300x nodes in this cluster are on an AMD service called Conductor. This allows them to be on the same corporate network and be able to communicate with each other even though geographically, they are located across the country. We have setup infrastructure so that these nodes are behind a kubernetes scheduler. This provides us with an easy way to allocate MI300 resources on demand instead of reserving and blocking off whole nodes. The goal is to improve our utilization of this scarce resource while making it available to a much larger crowd.
 
 ## Step 1: Kubernetes Setup
-Run these two commands to pull in all the required dependencies and configurations to enable kubernetes on your system:
+Run these two commands to pull in all the required dependencies and configurations to enable kubernetes on your system (`anon.conf` is downloaded to your current working directory as part of the script):
 
 ```
 ./setup_k8s.sh
@@ -33,8 +33,8 @@ This script will dispatch the job, display logs when finished, and delete the jo
 ### Option 2: SDXL Inference
 
 This job takes a bit more time (~10 minutes for the whole e2e compilation and inference flow), but is probably more in line with what you will be using the cluster for.
-Again, please change the job name [here](https://github.com/saienduri/ossci-cluster/blob/main/rocm-test.yaml#L4) to include your username. This is a shared namespace, so it reduces the probability of any job contention other jobs with the same name and helps us track better as well.
-Please take a look [here](https://github.com/saienduri/ossci-cluster/blob/main/shark-test.yaml#L25) to learn more on how you would setup environments and run different workloads.
+Again, please change the job name [here](https://github.com/saienduri/ossci-cluster/blob/main/rocm-test.yaml#L4) to include your username. This is a shared namespace, so it reduces the probability of any job contention with other jobs with the same name and helps us track better as well.
+Please take a look [here](https://github.com/saienduri/ossci-cluster/blob/main/shark-test.yaml#L25) to see how you would setup environments for running different workloads.
 
 To run the job:
 ```
