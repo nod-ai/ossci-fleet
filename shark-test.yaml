@@ -3,8 +3,6 @@ kind: Job
 metadata:
   name: shark-test-job
   namespace: dev
-  labels:
-    kueue.x-k8s.io/queue-name: dev-queue
 spec:
   template:
     spec:
