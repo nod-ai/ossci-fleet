@@ -20,7 +20,7 @@ Now, you are ready to run jobs on the cluster.
 
 If you want to just run a quick test, please use the `rocm-test.yaml` in this repo. 
 All this job is configured to do is a quick test to see if GPUs are available.
-Please change the job name [here](https://github.com/saienduri/ossci-cluster/blob/main/rocm-test.yaml#L4) to include your username. This is a shared namespace, so it reduces the probability of any job contention other jobs with the same name and helps us track better as well.
+Please change the job name [here](https://github.com/saienduri/ossci-cluster/blob/main/rocm-test.yaml#L4) to include your username. This is a shared namespace, so it helps avoid job contention/conflict with other jobs with the same name and helps us track better as well.
 You can use this as a template and add whatever else you'd like to test [here](https://github.com/saienduri/ossci-cluster/blob/main/rocm-test.yaml#L17).
 
 To run the job:
