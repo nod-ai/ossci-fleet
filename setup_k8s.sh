@@ -19,11 +19,4 @@ fi
 echo "Installing kubectl..."
 sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 
-echo "Installing wget..."
-sudo apt-get update -y
-sudo apt-get install wget -y
-
-echo "Downloading anon.conf..."
-wget -q https://sharkpublic.blob.core.windows.net/sharkpublic/ossci/anon.conf
-
 echo "Setup completed successfully!"
