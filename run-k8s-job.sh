@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# This is a helper script for running k8s jobs.
+# If you have a long-running job you'll want to decompose this script and
+# wait on the job itself. You can use add "set -x" to this script to do so.
+
+set -e
+
 JOB_FILE=$1
 
 # Check if a yaml file is provided

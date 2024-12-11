@@ -1,7 +1,14 @@
 #!/bin/bash
+
+# This is a simple setup script that installs kubectl on your local machine.
 set -e
 
 echo "Starting Kubernetes setup..."
+
+if [! -f "anon.conf" ]; then
+  "Please download anon.conf from the AMD OSSCI confluence site to get started"
+  exit 1
+fi
 
 echo "Downloading kubectl..."
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"

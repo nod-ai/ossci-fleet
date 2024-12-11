@@ -1,8 +1,14 @@
+# This job template makes it easy to create a job that depends on ROCm
 apiVersion: batch/v1
 kind: Job
 metadata:
+  # Change this name with something specific to you (aka include your username)
   name: rocm-test-job
   namespace: dev
+
+# This is the pod spec that starts a rocm container using the latest tensorflow
+# image that prebundles ROCm. Feel free to change the args or further customize
+# the command to curate for your use case.
 spec:
   template:
     spec:
@@ -15,6 +21,7 @@ spec:
         args:
         - |
           rocminfo && echo "ROCm is working!" || echo "ROCm is not working!";
+        # This can be modified is more than 1 gpu is needed.
         resources:
           limits:
             amd.com/gpu: 1

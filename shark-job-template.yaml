@@ -1,6 +1,9 @@
+# This is an advanced job template makes it easy to deploy a job that runs
+# a complex inference compilation pipeline.
 apiVersion: batch/v1
 kind: Job
 metadata:
+  # Change this name with something specific to you (aka include your username)
   name: shark-test-job
   namespace: dev
 spec:
