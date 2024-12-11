@@ -1,12 +1,14 @@
 #!/bin/bash
 
-# This is a simple setup script that installs kubectl on your local machine.
+# This is a simple setup script that ensures prereqs for running k8s jobs on the OSSCI
+# cluster are met.
 set -e
 
 echo "Starting Kubernetes setup..."
 
-if [! -f "anon.conf" ]; then
-  "Please download anon.conf from the AMD OSSCI confluence site to get started"
+if [ ! -f "anon.conf" ]; then
+  echo "Please download anon.conf from the AMD OSSCI confluence site to get started"
+  echo "You will need this auth file to access the k8s cluster"
   exit 1
 fi
 
