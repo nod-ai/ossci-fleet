@@ -12,7 +12,7 @@ Linux:
 export KUBECONFIG = "/path/to/your/anon.conf"
 ```
 
-Windows Powershell (elevated permissions required, so run as admin):
+Windows PowerShell (elevated permissions required, so run as admin):
 ```
 .\windows\setup_k8s.ps1
 $env:KUBECONFIG = "C:\path\to\your\anon.conf"
@@ -41,7 +41,7 @@ To run the job on Linux:
 ./linux/run-k8s-job.sh ./rocm-job-template.yaml
 ```
 
-To run the job on Windows Powershell:
+To run the job on Windows PowerShell:
 ```
 .\windows\run-k8s-job.ps1 .\rocm-job-template.yaml
 ```
@@ -59,7 +59,7 @@ To run the job on Linux:
 ./linux/run-k8s-job.sh ./shark-job-template.yaml
 ```
 
-To run the job on Windows Powershell:
+To run the job on Windows PowerShell:
 ```
 .\windows\run-k8s-job.ps1 .\shark-job-template.yaml
 ```
