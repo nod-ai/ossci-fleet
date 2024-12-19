@@ -35,7 +35,7 @@ Write-Host "Job name: $JobName"
 
 # Wait for the job to complete
 Write-Host "Waiting for the Job to complete in namespace '$Namespace'..."
-kubectl wait job/$JobName -n $Namespace --for condition=complete --timeout=900s
+kubectl wait job/$JobName -n $Namespace --for condition=complete --timeout=1200s
 if (-not $?) {
     Write-Host "Error: Job did not complete successfully."
     exit 1
