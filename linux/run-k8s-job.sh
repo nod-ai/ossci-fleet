@@ -35,7 +35,7 @@ echo "Job name: $JOB_NAME"
 
 # Wait for the job to complete. Change timeout flag if your job is expected to exceed 20 mins.
 echo "Waiting for the Job to complete in namespace '$NAMESPACE'..."
-kubectl wait job/$JOB_NAME -n "$NAMESPACE" --for condition=complete --timeout=1200s
+kubectl wait job/$JOB_NAME -n "$NAMESPACE" --for condition=complete --timeout=1500s
 if [ $? -ne 0 ]; then
   echo "Error: Job did not complete successfully."
   exit 1
