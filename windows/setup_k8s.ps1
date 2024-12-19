@@ -1,5 +1,3 @@
-# kubectl-install.ps1
-
 # This is a simple setup script that ensures prereqs for running k8s jobs on the OSSCI
 # cluster are met.
 

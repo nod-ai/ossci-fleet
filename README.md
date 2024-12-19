@@ -18,6 +18,8 @@ Windows Powershell (elevated permissions required, so run as admin):
 $env:KUBECONFIG = "C:\path\to\your\anon.conf"
 ```
 
+Refer to https://kubernetes.io/docs/tasks/tools/ if you would rather install kubernetes tools manually.
+
 ## Step 2: Run Jobs on the Cluster
 
 Now, you are ready to run jobs on the cluster. We've provided two sample
