@@ -4,7 +4,7 @@ This guide describes how to setup your environment from anywhere on the **AMD ne
 All the nodes in this cluster are MI300x. We have setup infrastructure so that these nodes are behind a kubernetes scheduler. This provides us with an easy way to allocate MI300x resources on demand instead of reserving and blocking off whole nodes. The goal is to improve our utilization of this scarce resource while making it available to a much larger crowd.
 
 ## Step 1: Kubernetes Setup
-Run these two commands to pull in all the required dependencies and set the appropriate configurations to enable kubernetes on your system:
+Please download anon.conf into your directory from `Getting Started` section in http://u.amd.com/ossci-cluster Run these two commands to pull in all the required dependencies and set the appropriate configurations to enable kubernetes on your system:
 
 Linux:
 ```
