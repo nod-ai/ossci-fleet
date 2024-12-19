@@ -33,7 +33,7 @@ if ($output -match "job\.batch/([^ ]+)") {
 }
 Write-Host "Job name: $JobName"
 
-# Wait for the job to complete. Change timeout if your job is expected to exceed 20 mins.
+# Wait for the job to complete. Change timeout if your job is expected to exceed 25 mins.
 Write-Host "Waiting for the Job to complete in namespace '$Namespace'..."
 kubectl wait job/$JobName -n $Namespace --for condition=complete --timeout=1500s
 if (-not $?) {
