@@ -1,8 +1,9 @@
 #!/bin/bash
 
 # This is a helper script for running k8s jobs.
-# If you have a long-running job you'll want to decompose this script and
+# If you have a long-running job you may want to decompose this script and
 # wait on the job itself. You can use add "set -x" to this script to do so.
+# You can also change the timeout flag mentioned below to accomodate for your long-running job.
 
 set -e
 
@@ -32,7 +33,7 @@ if [ -z "$JOB_NAME" ]; then
 fi
 echo "Job name: $JOB_NAME"
 
-# Wait for the job to complete
+# Wait for the job to complete. Change timeout flag if your job is expected to exceed 20 mins.
 echo "Waiting for the Job to complete in namespace '$NAMESPACE'..."
 kubectl wait job/$JOB_NAME -n "$NAMESPACE" --for condition=complete --timeout=1200s
 if [ $? -ne 0 ]; then

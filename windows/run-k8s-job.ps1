@@ -1,6 +1,6 @@
 # This is a helper script for running k8s jobs.
-# If you have a long-running job, you'll want to decompose this script
-# and wait on the job itself.
+# If you have a long-running job, you may want to decompose this script
+# and wait on the job itself or change the timeout flag mentioned below.
 
 param (
     [string]$JobFile
@@ -33,7 +33,7 @@ if ($output -match "job\.batch/([^ ]+)") {
 }
 Write-Host "Job name: $JobName"
 
-# Wait for the job to complete
+# Wait for the job to complete. Change timeout if your job is expected to exceed 20 mins.
 Write-Host "Waiting for the Job to complete in namespace '$Namespace'..."
 kubectl wait job/$JobName -n $Namespace --for condition=complete --timeout=1200s
 if (-not $?) {
