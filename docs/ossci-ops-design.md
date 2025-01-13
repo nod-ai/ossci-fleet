@@ -132,7 +132,8 @@ Reimage nodes with severe issues to ensure they are restored to a clean state.
 
 ## Node Life Cycle Diagram
 
-<img width="344" alt="{29056873-F3FD-4CF1-8A6F-F1CB443A51EA}" src="https://gist.github.com/user-attachments/assets/f2f74250-12d3-4d7f-b661-0e9fae7b2888" />
+![image](https://github.com/user-attachments/assets/51d74c89-3fec-4223-9b07-ae2672e2e30c)
+
 
 ## Challenges and Mitigations
 
