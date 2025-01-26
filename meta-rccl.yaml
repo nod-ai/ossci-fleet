@@ -50,7 +50,7 @@ spec:
           ibv_devices &&
           pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.2 &&
           cd /home/rasivara/workingdir &&
-          NCCL_IB_GID_INDEX=3 NCCL_SOCKET_IFNAME=ens51f0np0 NCCL_IB_HCA=bnxt_re0,bnxt_re1,bnxt_re2,bnxt_re3,bnxt_re4,bnxt_re5,bnxt_re6,bnxt_re7 UCX_NET_DEVICES=bnxt_re0,bnxt_re1,bnxt_re2,bnxt_re3,bnxt_re4,bnxt_re5,bnxt_re6,bnxt_re7 UCX_IB_GID_INDEX=3 torchrun --nnodes 32 --rdzv_id 45 --nproc_per_node 8 --rdzv_backend c10d --rdzv_endpoint 104.207.143.166:29500 collectives.py --iterations 100 --data_type bf16 --ccl_type all_reduce --bytes 268435456 --node_name WRT1-allreduce_T20_32
+          NCCL_IB_GID_INDEX=3 NCCL_IB_HCA=bnxt_re0,bnxt_re1,bnxt_re2,bnxt_re3,bnxt_re4,bnxt_re5,bnxt_re6,bnxt_re7 UCX_NET_DEVICES=bnxt_re0,bnxt_re1,bnxt_re2,bnxt_re3,bnxt_re4,bnxt_re5,bnxt_re6,bnxt_re7 UCX_IB_GID_INDEX=3 torchrun --nnodes 32 --rdzv_id 45 --nproc_per_node 8 --rdzv_backend c10d --rdzv_endpoint 104.207.143.166:29500 collectives.py --iterations 100 --data_type bf16 --ccl_type all_reduce --bytes 268435456 --node_name WRT1-allreduce_T20_32
         securityContext:
           privileged: true
         resources:
