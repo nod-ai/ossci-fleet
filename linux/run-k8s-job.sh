@@ -15,7 +15,7 @@ if [ -z "$JOB_FILE" ]; then
   exit 1
 fi
 
-NAMESPACE="dev"
+NAMESPACE="meta-rccl"
 
 # Apply the job
 echo "Deploying the Job in namespace '$NAMESPACE'..."
