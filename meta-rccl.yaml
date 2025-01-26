@@ -1,0 +1,71 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: torch-run-test-job
+spec:
+  parallelism: 32  # Run 32 jobs concurrently
+  completions: 32
+  template:
+    spec:
+      affinity:
+        # Node Affinity to be aware of network topology and make sure one of the jobs is scheduled on head node
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: row
+                operator: In
+                values:
+                - B
+            - matchExpressions:
+              - key: row
+                operator: In
+                values:
+                - A
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - node16
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app: torch-run-test
+            topologyKey: "kubernetes.io/hostname"
+      hostNetwork: true
+      containers:
+      - name: shark-test-container
+        image: rocm/dev-ubuntu-22.04:6.2.2
+        command: ["/bin/bash", "-c"]
+        args:
+        - |
+          sudo apt update &&
+          cp -r /home/ubuntu/* . &&
+          ./set_ib.sh &&
+          ibv_devices &&
+          pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/rocm6.2 &&
+          cd /home/rasivara/workingdir &&
+          NCCL_IB_GID_INDEX=3 NCCL_SOCKET_IFNAME=ens51f0np0 NCCL_IB_HCA=bnxt_re0,bnxt_re1,bnxt_re2,bnxt_re3,bnxt_re4,bnxt_re5,bnxt_re6,bnxt_re7 UCX_NET_DEVICES=bnxt_re0,bnxt_re1,bnxt_re2,bnxt_re3,bnxt_re4,bnxt_re5,bnxt_re6,bnxt_re7 UCX_IB_GID_INDEX=3 torchrun --nnodes 32 --rdzv_id 45 --nproc_per_node 8 --rdzv_backend c10d --rdzv_endpoint 104.207.143.166:29500 collectives.py --iterations 100 --data_type bf16 --ccl_type all_reduce --bytes 268435456 --node_name WRT1-allreduce_T20_32
+        securityContext:
+          privileged: true
+        resources:
+          requests:
+            amd.com/gpu: 8
+            amd.com/roce: 8
+          limits:
+            amd.com/gpu: 8
+            amd.com/roce: 8
+        volumeMounts:
+        - name: nfs-volume
+          mountPath: /home
+      volumes:
+      - name: nfs-volume
+        hostPath:
+          path: /home
+          type: Directory
+      restartPolicy: Never
+  backoffLimit: 0
