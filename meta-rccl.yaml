@@ -2,6 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: torch-run-test-job
+  namespace: meta-rccl
 spec:
   parallelism: 32  # Run 32 jobs concurrently
   completions: 32
