@@ -3,18 +3,24 @@
 # and wait on the job itself or change the timeout flag mentioned below.
 
 param (
-    [string]$JobFile
+    [string]$JobFile,
+    [string]$Namespace
 )
 
 $ErrorActionPreference = "Stop"
 
 # Check if a YAML file is provided
 if (-not $JobFile) {
-    Write-Host "Usage: .\script.ps1 <job.yaml>"
+    Write-Host "Usage: .\script.ps1 <job.yaml> <namespace>"
     exit 1
 }
 
-$Namespace = "dev"
+# Check if a Namespace is provided
+if (-not $Namespace) {
+    Write-Host "Error: Namespace is required."
+    Write-Host "Usage: .\script.ps1 <job.yaml> <namespace>"
+    exit 1
+}
 
 # Apply the job
 Write-Host "Deploying the Job in namespace '$Namespace'..."
