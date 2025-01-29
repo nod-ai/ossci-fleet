@@ -17,7 +17,6 @@ if (-not $JobFile) {
 
 # Check if a Namespace is provided
 if (-not $Namespace) {
-    Write-Host "Error: Namespace is required."
     Write-Host "Usage: .\script.ps1 <job.yaml> <namespace>"
     exit 1
 }
