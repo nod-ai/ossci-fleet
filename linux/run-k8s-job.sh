@@ -22,8 +22,6 @@ if [ -z "$NAMESPACE" ]; then
   exit 1
 fi
 
-NAMESPACE="dev"
-
 # Apply the job
 echo "Deploying the Job in namespace '$NAMESPACE'..."
 output=$(kubectl apply -f "$JOB_FILE" -n "$NAMESPACE")
