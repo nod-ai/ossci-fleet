@@ -37,15 +37,16 @@ are welcome!
 If you want to just run a quick test, please use the `rocm-job-template.yaml` in this repo. 
 All this job is configured to do is a run a hello-world to see if GPUs are available.
 Please change the job name to include your username. This is a shared namespace, so it helps avoid job contention/conflict with other jobs with the same name and helps us track better as well.
+Please use your assigned namespace in the kubernetes cluster. If you are just using anon.conf, you can use the `dev` namespace.
 
 To run the job on Linux:
 ```
-./linux/run-k8s-job.sh ./rocm-job-template.yaml
+./linux/run-k8s-job.sh ./rocm-job-template.yaml <namespace>
 ```
 
 To run the job on Windows PowerShell:
 ```
-.\windows\run-k8s-job.ps1 .\rocm-job-template.yaml
+.\windows\run-k8s-job.ps1 .\rocm-job-template.yaml <namespace>
 ```
 
 This script will dispatch the job, display logs when finished, and delete the job as part of cleanup.
@@ -55,15 +56,16 @@ This script will dispatch the job, display logs when finished, and delete the jo
 If you want to run a more advanced test, please use the `shark-job-template.yaml`.
 This job takes a bit more time (~10 minutes for the whole e2e compilation and inference flow), but is probably more in line with what you will be using the cluster for.
 Again, please change the job name to include your username. This is a shared namespace, so it helps avoid any job contention/conflict with other jobs with the same name and helps us track better as well.
+Please use your assigned namespace in the kubernetes cluster. If you are just using anon.conf, you can use the `dev` namespace.
 
 To run the job on Linux:
 ```
-./linux/run-k8s-job.sh ./shark-job-template.yaml
+./linux/run-k8s-job.sh ./shark-job-template.yaml <namespace>
 ```
 
 To run the job on Windows PowerShell:
 ```
-.\windows\run-k8s-job.ps1 .\shark-job-template.yaml
+.\windows\run-k8s-job.ps1 .\shark-job-template.yaml <namespace>
 ```
 
 This script will dispatch the job, display logs when finished, and delete the job as part of cleanup.
