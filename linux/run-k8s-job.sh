@@ -8,10 +8,17 @@
 set -e
 
 JOB_FILE=$1
+NAMESPACE=$2
 
 # Check if a yaml file is provided
 if [ -z "$JOB_FILE" ]; then
-  echo "Usage: $0 <job.yaml>"
+  echo "Usage: $0 <job.yaml> <namespace>"
+  exit 1
+fi
+
+# Check if a namespace is provided
+if [ -z "$NAMESPACE" ]; then
+  echo "Usage: $0 <job.yaml> <namespace>"
   exit 1
 fi
 
