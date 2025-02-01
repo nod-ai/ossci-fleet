@@ -5,7 +5,6 @@ kind: Job
 metadata:
   # Change this name with something specific to you (aka include your username)
   name: shark-test-job
-  namespace: dev
 spec:
   template:
     spec:
