@@ -4,7 +4,6 @@ kind: Job
 metadata:
   # Change this name with something specific to you (aka include your username)
   name: rocm-test-job
-  namespace: dev
 
 # This is the pod spec that starts a rocm container using the latest tensorflow
 # image that prebundles ROCm. Feel free to change the args or further customize
