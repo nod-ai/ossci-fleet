@@ -11,8 +11,6 @@ metadata:
 spec:
   template:
     spec:
-      nodeSelector:
-        dev: "true"
       containers:
       - name: rocm-test-container
         image: rocm/tensorflow:latest

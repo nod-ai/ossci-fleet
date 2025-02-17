@@ -34,7 +34,7 @@ are welcome!
 
 ### Option 1: Base ROCm Job
 
-If you want to just run a quick test, please use the `rocm-job-template.yaml` in this repo. 
+If you want to just run a quick test, please use the `rocm-job-template.yaml` in this repo.
 All this job is configured to do is a run a hello-world to see if GPUs are available.
 Please change the job name to include your username. This is a shared namespace, so it helps avoid job contention/conflict with other jobs with the same name and helps us track better as well.
 Please use your assigned namespace in the kubernetes cluster. If you are just using anon.conf, you can use the `dev` namespace.
@@ -72,3 +72,7 @@ This script will dispatch the job, display logs when finished, and delete the jo
 The last line of the log will be an url to the image you just generated :)
 
 If you are more interested in a docker in docker type of workload, you would do something like this: https://gist.github.com/saienduri/67e8b1687bc08e9b9519e1febea23f80
+
+## Debugging
+
+Please following [Debug Running Pods](https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/) if your job fails.
