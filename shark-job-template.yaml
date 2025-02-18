@@ -8,6 +8,9 @@ metadata:
 spec:
   template:
     spec:
+      # please comment the nodeSelector like below if your pod fails to schedule
+      # nodeSelector:
+      #   dev: "true"
       nodeSelector:
         dev: "true"
       containers:
