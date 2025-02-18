@@ -73,6 +73,7 @@ The last line of the log will be an url to the image you just generated :)
 
 If you are more interested in a docker in docker type of workload, you would do something like this: https://gist.github.com/saienduri/67e8b1687bc08e9b9519e1febea23f80
 
-## Debugging
+## Debugging and Basic Usage
 
-Please following [Debug Running Pods](https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/) if your job fails.
+- Please following [Debug Running Pods](https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/) if your job fails.
+- [Get a shell to a running container for interactive development](https://kubernetes.io/docs/tasks/debug/debug-application/get-shell-running-container/)
