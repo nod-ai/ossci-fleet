@@ -8,6 +8,11 @@ metadata:
 spec:
   template:
     spec:
+      # please comment the nodeSelector like below if your pod fails to schedule
+      # nodeSelector:
+      #   dev: "true"
+      nodeSelector:
+        dev: "true"
       containers:
       - name: shark-test-container
         image: rocm/dev-ubuntu-22.04:6.3
