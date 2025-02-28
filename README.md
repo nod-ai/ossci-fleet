@@ -41,12 +41,12 @@ Please use your assigned namespace in the kubernetes cluster. If you are just us
 
 To run the job on Linux:
 ```
-./linux/run-k8s-job.sh ./rocm-job-template.yaml <namespace>
+./linux/run-k8s-job.sh ./example-templates/rocm-job-template.yaml <namespace>
 ```
 
 To run the job on Windows PowerShell:
 ```
-.\windows\run-k8s-job.ps1 .\rocm-job-template.yaml <namespace>
+.\windows\run-k8s-job.ps1 .\example-templates\rocm-job-template.yaml <namespace>
 ```
 
 This script will dispatch the job, display logs when finished, and delete the job as part of cleanup.
@@ -60,16 +60,37 @@ Please use your assigned namespace in the kubernetes cluster. If you are just us
 
 To run the job on Linux:
 ```
-./linux/run-k8s-job.sh ./shark-job-template.yaml <namespace>
+./linux/run-k8s-job.sh ./example-templates/shark-job-template.yaml <namespace>
 ```
 
 To run the job on Windows PowerShell:
 ```
-.\windows\run-k8s-job.ps1 .\shark-job-template.yaml <namespace>
+.\windows\run-k8s-job.ps1 .\example-templates\shark-job-template.yaml <namespace>
 ```
 
 This script will dispatch the job, display logs when finished, and delete the job as part of cleanup.
 The last line of the log will be an url to the image you just generated :)
+
+### Option 3: Multi Node Training Workload
+
+If you want to run a jax multi node training job, please use the `example-templates/jax-training-template`.
+Please change the job name and configmap name to include your NTID. This is a shared namespace, so it helps avoid any job contention/conflict with other jobs with the same name and helps us track better as well.
+Please use your assigned namespace in the kubernetes cluster.
+
+To run the job on Linux:
+```
+./linux/run-k8s-job.sh ./example-templates/jax-training-template.yaml <namespace>
+```
+
+To run the job on Windows PowerShell:
+```
+.\windows\run-k8s-job.ps1 .\example-templates\jax-training-template.yaml <namespace>
+```
+
+If you see that the `head-node-labeler` service account is not available in your namespace, please ask a cluster maintainer to apply `example-templates/training-service-account` so you have the service account with the neccesary permissions to run training jobs in your namespace.
+This script will dispatch the training job, display logs when finished, and delete the job as part of cleanup.
+
+### Option 4: Dind
 
 If you are more interested in a docker in docker type of workload, you would do something like this: https://gist.github.com/saienduri/67e8b1687bc08e9b9519e1febea23f80
 
