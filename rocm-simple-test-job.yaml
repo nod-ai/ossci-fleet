@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: rocm-simple-test-job
+spec:
+  template:
+    spec:
+      nodeSelector:
+        dev: "true"
+      containers:
+      - name: rocm-test-container
+        image: rocm/tensorflow:latest
+        command: ["/bin/bash", "-c"]
+        args:
+        - |
+          echo "Testing ROCm environment..."
+          rocminfo && echo "ROCm is working successfully!" || echo "ROCm is not working!"
+          echo "ROCm version:"
+          cat /opt/rocm/.info/version 2>/dev/null || echo "Version information not found"
+          echo "Checking GPU availability with TensorFlow:"
+          python3 -c "import tensorflow as tf; print('Num GPUs Available:', len(tf.config.list_physical_devices('GPU')))"
+        resources:
+          limits:
+            amd.com/gpu: 1
+      restartPolicy: Never
+  backoffLimit: 0
