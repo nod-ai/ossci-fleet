@@ -1,0 +1,89 @@
+## minRunners is the min number of idle runners. The target number of runners created will be
+## calculated as a sum of minRunners and the number of jobs assigned to the scale set.
+controllerServiceAccount:
+  name: arc-gha-rs-controller
+  namespace: arc
+template:
+  spec:
+    initContainers:
+      - name: init-dind-externals
+        image: ghcr.io/saienduri/ghascale-rocm-dev:main
+        imagePullPolicy: Always
+        command:
+          ["cp", "-r", "/home/runner/externals/.", "/home/runner/tmpDir/"]
+        volumeMounts:
+          - name: dind-externals
+            mountPath: /home/runner/tmpDir
+      - name: dind
+        image: ghcr.io/saienduri/dind:main
+        restartPolicy: Always
+        command: ["sh", "-c"]
+        args:
+          - |
+            dockerd --host=unix:///var/run/docker.sock --group=${DOCKER_GROUP_GID} &
+            until docker info >/dev/null 2>&1; do sleep 5; done
+            tail -f /dev/null
+        env:
+          - name: DOCKER_GROUP_GID
+            value: "123"
+        securityContext:
+          privileged: true
+        volumeMounts:
+          - name: work
+            mountPath: /home/runner/_work
+          - name: dind-sock
+            mountPath: /var/run
+          - name: dind-externals
+            mountPath: /home/runner/externals
+          - name: podinfo
+            mountPath: /etc/podinfo
+    containers:
+      - name: runner
+        image: ghcr.io/saienduri/ghascale-rocm-dev:main
+        ports:
+          - containerPort: 8080
+        imagePullPolicy: Always
+        command:
+          - /bin/sh
+          - -c
+          - |
+            devices=$(ls -la /dev/dri/ | grep renderD | awk '{print $10}')
+            GHA_RENDER_DEVICES=""
+            for device in $devices; do
+              GHA_RENDER_DEVICES="${GHA_RENDER_DEVICES} --device /dev/dri/${device}"
+            done
+            echo "${GHA_RENDER_DEVICES}" > /etc/podinfo/gha-render-devices
+            echo "Waiting for docker..."
+            until docker info >/dev/null 2>&1; do sleep 5; done
+            /home/runner/run.sh
+        resources:
+          requests:
+            cpu: 25000m
+            memory: 75000Mi
+            amd.com/gpu: 1
+          limits:
+            amd.com/gpu: 1
+        env:
+          - name: DOCKER_HOST
+            value: unix:///var/run/docker.sock
+        volumeMounts:
+          - name: work
+            mountPath: /home/runner/_work
+          - name: dind-sock
+            mountPath: /var/run
+          - name: dind-externals
+            mountPath: /home/runner/externals
+          - name: podinfo
+            mountPath: /etc/podinfo
+
+    volumes:
+      - name: work
+        emptyDir: {}
+      - name: dind-sock
+        emptyDir: {}
+      - name: dind-externals
+        emptyDir: {}
+      - name: podinfo
+        emptyDir: {}
+githubConfigUrl: https://github.com/ROCm
+githubConfigSecret: pre-defined-rocm-secret
