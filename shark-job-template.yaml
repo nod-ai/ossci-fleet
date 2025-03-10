@@ -34,7 +34,6 @@ spec:
           pip install --pre --upgrade -r ../iree-turbine/iree-requirements.txt &&
           pip install --no-compile --pre --upgrade -e models -r models/requirements.txt &&
           python3 models/turbine_models/custom_models/sd_inference/sd_pipeline.py --device=hip --precision=fp16 --iree_target_triple=gfx942 --external_weights=safetensors --hf_model_name=stabilityai/stable-diffusion-xl-base-1.0 --width=1024 --height=1024 --batch_size=1 --use_i8_punet --attn_spec=punet --vae_decomp_attn --external_weights=safetensors --num_inference_steps=20 --verbose --benchmark=all &&
-          STORAGE_KEY="V/w1DDpjcE0YgwRUT9mAH+V1LbniogpOr2tStfNtND7MPY5sFWGz9Ko3pGQAns+qu/vm3prqfWSq+AStmd7q6A==" bash upload_to_azure.sh;
         resources:
           limits:
             amd.com/gpu: 1
