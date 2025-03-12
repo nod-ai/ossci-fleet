@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: azure-disk-pvc
+  namespace: arc-runners  # Ensure it's in the arc-runners namespace
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5000Gi  # Adjust size as needed
+  storageClassName: "managed-csi"  # Azure Disk CSI driver
