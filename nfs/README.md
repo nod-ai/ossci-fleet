@@ -1,30 +1,22 @@
-# Using an NFS to allow a runner to access local Files
+# Using an NFS to allow a pod to access local Files
 
 ## Creating the Persistent Volume
 
-First, make sure your directory is set up as an NFS. After that you can use this template stored in `sample-persistent-volume.yaml` to create a persistent volume
+First, find a persistent volume in the right region
 
-```
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: my-nfs-pv
-spec:
-  capacity:
-    storage: 1Gi
-  accessModes:
-    - ReadWriteMany
-  persistentVolumeReclaimPolicy: Retain
-  storageClassName: nfs
-  nfs:
-    server: <server-ip>
-    path: /path/to/nfs/directory
-```
+| Host Name     | Region | Location           | IP |
+|----------|--------|--------------|--------------------|
+| banff-1e707-e02-2.mkm.dcgpu | CA-GTA | Markham Campus  | rmm-banff-1e707-e02.amd.com |
+| smc300x-clt-r4c4-34.cs-clt.dcgpu | US-Southeast | Charlotte Cirrascale Colo | 10.235.86.34 |
+| smc300x-clt-r4c6-26.cs-clt.dcgpu | US-Southeast | Charlotte Cirrascale Colo | 10.235.86.43 |
+| smc300x-clt-r4c6-34.cs-clt.dcgpu | US-Southeast | Charlotte Cirrascale Colo | 10.235.86.44 |
+| banff-1e707-f07-5.mkm.dcgpu | CA-GTA | Markham Campus | rmm-banff-1e707-f07.amd.com |
+| banff-sc-cs47-05.dh170.dcgpu | US-BayArea | Santa Clara DH170 Lab | 10.216.110.62 |
+| dell300x-ccs-aus-B17-19.cs-aus.dcgpu | US-Texas | Austin Cirrascale Colo | 10.235.28.121 |
+| SMC-SC-DI09-03.dh144.dcgpu | US-BayArea | Santa Clara DH144 Lab | 10.216.113.229 |
 
-Afterwards apply it with `kubectl apply -f sample-persistent-volume.yaml`
-
-Make sure to increase storage space for any job that is not a simple example
-
+you can look at avaliable persistent volumes by running `kubectl get pv`
+ 
 ## Creating a persistent volume claim
 
 Next, create a persistent volume claim using the template in `sample-persistent-volume-claim.yaml`
