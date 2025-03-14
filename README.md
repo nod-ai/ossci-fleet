@@ -10,14 +10,14 @@ Run these two commands to pull in all the required dependencies and set the appr
 
 Linux:
 ```
-./linux/setup_k8s.sh
 export KUBECONFIG = "/path/to/your/anon.conf"
+./linux/setup_k8s.sh
 ```
 
 Windows PowerShell (elevated permissions required, so run as admin):
 ```
-.\windows\setup_k8s.ps1
 $env:KUBECONFIG = "C:\path\to\your\anon.conf"
+.\windows\setup_k8s.ps1
 ```
 
 Refer to https://kubernetes.io/docs/tasks/tools/ if you would rather install kubectl manually.
