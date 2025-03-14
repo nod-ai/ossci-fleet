@@ -46,7 +46,7 @@ spec:
             runAsUser: 0
       containers:
       - name: jax-maxtext-container
-        image: 108.61.202.185:5000/rocm/jax-private:rocm6.2.3-jax0.4.30-py3.10.15-te_fa3_maxtext_cs
+        image: 108.61.202.185:5000/rocm/jax-private:rocm6.2.3-jax0.4.30-py3.10.15-te_fa3_maxtext_cs # Using local container registry here. You can switch to any registry you need
         env:
           - name: NODE_RANK
             valueFrom:
