@@ -6,10 +6,18 @@ set -e
 
 echo "Starting Kubernetes setup..."
 
-if [ ! -f "anon.conf" ]; then
-  echo "Please download anon.conf from the AMD OSSCI confluence site to get started"
+# Exit early if KUBECONFIG is not set to a valid path
+if [ -z "$KUBECONFIG" ]; then
+  echo "KUBECONFIG is not set or empty. Exiting"
+  echo "Please download the authentication file from the AMD OSSCI confluence site and set KUBECONFIG env variable to the file path"
   echo "You will need this auth file to access the k8s cluster"
   exit 1
+elif [ ! -f "$KUBECONFIG" ]; then
+  echo "File $KUBECONFIG does not exit. Exiting"
+  echo "Plese make sure the KUBECONFIG env variable is correctly set to the authentication file path"
+  exit 1
+else
+  echo "KUBECONFIG is set to: $KUBECONFIG"
 fi
 
 echo "Downloading kubectl..."
