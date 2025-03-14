@@ -34,6 +34,7 @@ spec:
     requests:
       storage: 1Gi
   storageClassName: "nfs"
+  volumeName: <persistent-volume-name>
 ```
 make sure the namespace matches your namespace.
 
