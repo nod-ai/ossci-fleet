@@ -38,6 +38,6 @@ the conductor servers can be found here
 
 ## Naming convention
 
-When creating a new PV, use the naming convention `<Name>-<size>-<Index Based on Name>`
+When creating a new PV, use the naming convention `pv-<Name>-<size>-<Index Based on Name>`
 
-For example, if we needed to create a 3TB PV in SMC-SC-DI09-03, we would call it `SMC-SC-DI09-03-3TB-00`.  If we needed a second PV on the same host with 1TB of space, we would call it `SMC-SC-DI09-03-1TB-01`
+For example, if we needed to create a 3TB PV in SMC-SC-DI09-03, we would call it `pv-SMC-SC-DI09-03-3TB-00`.  If we needed a second PV on the same host with 1TB of space, we would call it `pv-SMC-SC-DI09-03-1TB-01`
