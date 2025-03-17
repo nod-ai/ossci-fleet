@@ -7,10 +7,21 @@ $kubectlVersion = "v1.32.0"
 
 Write-Host "Starting kubernetes setup..."
 
-if (-not (Test-Path -Path "anon.conf" -PathType Leaf)) {
-    Write-Host "Please download anon.conf from the AMD OSSCI confluence site to get started"
+# Exit early if KUBECONFIG is not set to a valid path
+$kubeconfigPath = [System.Environment]::GetEnvironmentVariable('KUBECONFIG')
+if ( -not $kubeconfigPath) {
+    Write-Host "KUBECONFIG is not set or empty. Exiting"
+    Write-Host "Please download the authentication file from the AMD OSSCI confluence site and set KUBECONFIG env variable to the file path"
     Write-Host "You will need this auth file to access the k8s cluster"
     exit 1
+}
+elseif ( -not (Test-Path -Path $kubeconfigPath)) {
+    Write-Host "File $kubeconfigPath does not exit. Exiting"
+    Write-Host "Plese make sure the KUBECONFIG env variable is correctly set to the authentication file path"
+    exit 1
+}
+else {
+    Write-Host "KUBECONFIG is set to: $kubeconfigPath"
 }
 
 Write-Host "Downloading kubectl..."
@@ -32,10 +43,6 @@ if ($calculatedHash -eq $expectedHash) {
 
 # Requires elevated powershell
 Write-Host "Adding current directory to PATH..."
-[System.Environment]::SetEnvironmentVariable(
-    "Path",
-    [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::Machine) + ";$PWD",
-    [System.EnvironmentVariableTarget]::Machine
-)
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::Machine) + ";$PWD"
 
 Write-Host "Setup completed successfully!"
