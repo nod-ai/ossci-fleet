@@ -1,0 +1,98 @@
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jax-coordinator-config # Update to include your NTID so there isn't conflict between users
+data:
+  JAX_COORDINATOR_IP: "0.0.0.0" # Placeholder for head node IP which will get updated in training job below
+
+---
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: jax-maxtest-job # Update to include your NTID so there isn't conflict between users
+spec:
+  parallelism: 2 # Update to number of nodes needed for training
+  completions: 2
+  completionMode: Indexed
+  template:
+    spec:
+      hostNetwork: true
+      restartPolicy: Never
+      serviceAccountName: head-node-labeler # Has permission to patch the configmap resource with head IP
+      restartPolicy: Never
+      initContainers:
+        - name: set-coordinator-ip # This init container updates the configmap with the rank 0 node IP
+          image: bitnami/kubectl:latest
+          command:
+            - "sh"
+            - "-c"
+            - |
+              apt-get update && apt-get install -y iproute2
+              if [ "$NODE_RANK" -eq 0 ]; then
+                HEAD_NODE_IP=$(ip route get 1 | awk '{print $7; exit}')
+                echo "Setting HEAD_NODE_IP=$HEAD_NODE_IP"
+                kubectl patch configmap jax-coordinator-config -p "{\"data\": {\"JAX_COORDINATOR_IP\": \"$HEAD_NODE_IP\"}}"
+              fi
+              sleep 20
+          env:
+            - name: NODE_RANK
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['batch.kubernetes.io/job-completion-index']
+          securityContext:
+            runAsUser: 0
+      containers:
+      - name: jax-maxtext-container
+        image: 108.61.202.185:5000/rocm/jax-private:rocm6.2.3-jax0.4.30-py3.10.15-te_fa3_maxtext_cs # Using local container registry here. You can switch to any registry you need
+        env:
+          - name: NODE_RANK
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.annotations['batch.kubernetes.io/job-completion-index']
+          - name: JAX_COORDINATOR_IP # Retrieve the rank 0 node IP that was set in init container
+            valueFrom:
+              configMapKeyRef:
+                name: jax-coordinator-config
+                key: JAX_COORDINATOR_IP
+        command: ["sh", "-c", "
+                 export JAX_COORDINATOR_IP=${JAX_COORDINATOR_IP} &&
+                 export JAX_COORDINATOR_PORT=3412 &&
+                 export JAX_DISTRIBUTED_INITIALIZATION_TIMEOUT_SECONDS=10000 &&
+                 export NNODES=2 &&
+                 export NODE_RANK=${NODE_RANK} &&
+                 export XLA_PYTHON_CLIENT_MEM_FRACTION=.95 &&
+                 export XLA_FLAGS='--xla_gpu_enable_cublaslt=true --xla_gpu_graph_level=0 --xla_gpu_autotune_level=0 --xla_gpu_enable_latency_hiding_scheduler=TRUE --xla_gpu_all_gather_combine_threshold_bytes=8589934592 --xla_gpu_enable_all_gather_combine_by_dim=FALSE --xla_gpu_enable_reduction_epilogue_fusion=TRUE --xla_gpu_enable_priority_fusion=TRUE --xla_gpu_redzone_padding_bytes=1024 --xla_disable_hlo_passes=rematerialization' &&
+                 export NVTE_USE_HIPBLASLT=1 &&
+                 export GPU_MAX_HW_QUEUES=2 &&
+                 export HIP_FORCE_DEV_KERNARG=1 &&
+                 export HSA_FORCE_FINE_GRAIN_PCIE=1 &&
+                 export NVTE_ALLOW_NONDETERMINISTIC_ALGO=1 &&
+                 export NVTE_FUSED_ATTN=1 &&
+                 export NCCL_IB_GID_INDEX=3 &&
+                 export NCCL_CROSS_NIC=2 &&
+                 export NCCL_IB_HCA=bnxt_re0,bnxt_re1,bnxt_re2,bnxt_re3,bnxt_re4,bnxt_re5,bnxt_re6,bnxt_re7 &&
+                 export NCCL_CHECKS_DISABLE=1 &&
+                 export NCCL_IB_GID_INDEX=3 &&
+                 export NVTE_CK_BWD_V3=1 &&
+                 export NVTE_CK_V3_RTZ_CVT=2 &&
+                 export NVTE_CK_V3_BF16_CVT=2 &&
+                 export NCCL_DEBUG=INFO &&
+                 export NCCL_PROTO=Simple &&
+                 export LD_LIBRARY_PATH=/opt/rocm/lib:$LD_LIBRARY_PATH &&
+                 cd /home/maxtext &&
+                 python MaxText/train.py MaxText/configs/models/gpu/llama2_70b.yml hardware=gpu steps=50 dcn_data_parallelism=-1 dcn_fsdp_parallelism=1 ici_fsdp_parallelism=8 per_device_batch_size=7 max_target_length=8192 dataset_type='synthetic' attention=cudnn_flash_te remat_policy=full scan_layers=true base_output_directory=/home/output  weight_dtype=bfloat16 logits_dot_in_fp32=False log_period=100000 enable_goodput_recording=false monitor_goodput=false"]
+        resources:
+          requests:
+            amd.com/gpu: 8
+          limits:
+            amd.com/gpu: 8
+        volumeMounts:
+          - name: shm # Mount to ensure there is enough shared memory in the container
+            mountPath: /dev/shm
+      volumes:
+        - name: shm
+          emptyDir:
+            sizeLimit: 50Gi
