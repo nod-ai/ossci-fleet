@@ -100,7 +100,7 @@ The port forward command allows you to forward a port from your local machine to
 Now, you can use jupyter notebook on your browser at `http://localhost:<port-number-local>`
 
 
-### Option 3: Multi Node Training Workload
+### Option 4: Multi Node Training Workload
 
 If you want to run a jax multi node training job, please use the `example-templates/workloads/jax-training-template`.
 Please change the job name and configmap name to include your NTID. This is a shared namespace, so it helps avoid any job contention/conflict with other jobs with the same name and helps us track better as well.
@@ -119,7 +119,7 @@ To run the job on Windows PowerShell:
 If you see that the `head-node-labeler` service account is not available in your namespace, please ask a cluster maintainer to apply `example-templates/permissions/training-service-account` so you have the service account with the neccesary permissions to run training jobs in your namespace.
 This script will dispatch the training job, display logs when finished, and delete the job as part of cleanup.
 
-### Option 4: Dind
+### Option 5: Dind
 
 If you are more interested in a docker in docker type of workload, you would do something like this: https://gist.github.com/saienduri/67e8b1687bc08e9b9519e1febea23f80
 
