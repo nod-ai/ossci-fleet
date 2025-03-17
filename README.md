@@ -99,6 +99,10 @@ kubectl port-forward -n <namespace> <pod-name> <port-number-local>:<port-number-
 The port forward command allows you to forward a port from your local machine to the port number used in the pod yml, so you can access the server locally.
 Now, you can use jupyter notebook on your browser at `http://localhost:<port-number-local>`
 
+Please delete your interactive pod after you are done using.
+```
+kubectl delete pod <pod-name> -n <namespace>
+```
 
 ### Option 4: Multi Node Training Workload
 
