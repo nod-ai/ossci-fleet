@@ -6,7 +6,7 @@ spec:
   restartPolicy: Always
   containers:
     - name: interactive-shell
-      image: ghcr.io/saienduri/rocm-dev:main
+      image: rocm/dev-ubuntu-22.04:6.3
       command: ["/bin/bash", "-c", "curl -fsSL https://code-server.dev/install.sh | sh && PASSWORD='test' code-server --port 9000 --auth password && tail -f /dev/null"]
       tty: true
       stdin: true
