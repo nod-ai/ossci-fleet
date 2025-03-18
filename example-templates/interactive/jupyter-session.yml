@@ -7,7 +7,7 @@ spec:
   containers:
     - name: interactive-shell
       image: rocm/dev-ubuntu-22.04:6.3
-      command: ["/bin/bash", "-c", "pip install jupyter && jupyter notebook --ip=0.0.0.0 --port=5000 --allow-root --NotebookApp.token='' --NotebookApp.password='' && tail -f /dev/null"]
+      command: ["/bin/bash", "-c", "pip install jupyter && jupyter notebook --ip=0.0.0.0 --port=5000 --allow-root --NotebookApp.token='' --NotebookApp.password=''"]
       tty: true
       stdin: true
       resources:

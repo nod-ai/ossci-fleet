@@ -7,7 +7,7 @@ spec:
   containers:
     - name: interactive-shell
       image: rocm/dev-ubuntu-22.04:6.3
-      command: ["/bin/bash", "-c", "curl -fsSL https://code-server.dev/install.sh | sh && PASSWORD='test' code-server --port 9000 --auth password && tail -f /dev/null"]
+      command: ["/bin/bash", "-c", "curl -fsSL https://code-server.dev/install.sh | sh && PASSWORD='test' code-server --port 9000 --auth password"]
       tty: true
       stdin: true
       resources:
