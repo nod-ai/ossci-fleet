@@ -17,7 +17,7 @@ First, find a persistent volume in the right region
 
 you can look at available persistent volumes by running `kubectl get pv`
 
-If you don't have a persistent volume, you can request one by filing a ticket here https://ontrack-internal.amd.com/plugins/servlet/samlconsumer
+If you don't have a persistent volume, you can request one by filing a ticket here https://ontrack-internal.amd.com/projects/OSSCI/summary
 
 Specify the Region and 
  
