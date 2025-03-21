@@ -7,7 +7,9 @@ spec:
   containers:
     - name: interactive-shell
       image: rocm/dev-ubuntu-22.04:6.3
-      command: ["/bin/bash", "-c", "curl -fsSL https://code-server.dev/install.sh | sh && PASSWORD='test' code-server --port 9000 --auth password"]
+      # Include PASSWORD environment variable with the password you want to use
+      # and set --auth to password if you want to set a password to access your vscode session
+      command: ["/bin/bash", "-c", "curl -fsSL https://code-server.dev/install.sh | sh && code-server --auth none --port 9000"]
       tty: true
       stdin: true
       resources:
