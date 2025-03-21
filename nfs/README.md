@@ -15,8 +15,6 @@ First, find a persistent volume in the right region
 | dell300x-ccs-aus-B17-19.cs-aus.dcgpu | US-Texas | Austin Cirrascale Colo | 10.235.28.121 |
 | SMC-SC-DI09-03.dh144.dcgpu | US-BayArea | Santa Clara DH144 Lab | 10.216.113.229 |
 
-you can look at available persistent volumes by running `kubectl get pv`
-
 If you don't have a persistent volume, you can request one by filing a ticket here https://ontrack-internal.amd.com/projects/OSSCI/summary
 
 Specify the Region and 
