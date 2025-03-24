@@ -17,7 +17,7 @@ First, find a persistent volume in the right region
 
 If you don't have a persistent volume, you can request one by filing a ticket here https://ontrack-internal.amd.com/projects/OSSCI/summary
 
-Specify the Region and 
+Specify the Region and size you want the PV to be in the ticket
  
 ## Creating a persistent volume claim
 
