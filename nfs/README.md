@@ -2,22 +2,9 @@
 
 ## Creating the Persistent Volume
 
-First, find a persistent volume in the right region
+If you don't already have a persistent volume, you can request one by filing a ticket here https://ontrack-internal.amd.com/projects/OSSCI/summary
 
-| Host Name     | Region | Location           | IP |
-|----------|--------|--------------|--------------------|
-| banff-1e707-e02-2.mkm.dcgpu | CA-GTA | Markham Campus  | rmm-banff-1e707-e02.amd.com |
-| smc300x-clt-r4c4-34.cs-clt.dcgpu | US-Southeast | Charlotte Cirrascale Colo | 10.235.86.34 |
-| smc300x-clt-r4c6-26.cs-clt.dcgpu | US-Southeast | Charlotte Cirrascale Colo | 10.235.86.43 |
-| smc300x-clt-r4c6-34.cs-clt.dcgpu | US-Southeast | Charlotte Cirrascale Colo | 10.235.86.44 |
-| banff-1e707-f07-5.mkm.dcgpu | CA-GTA | Markham Campus | rmm-banff-1e707-f07.amd.com |
-| banff-sc-cs47-05.dh170.dcgpu | US-BayArea | Santa Clara DH170 Lab | 10.216.110.62 |
-| dell300x-ccs-aus-B17-19.cs-aus.dcgpu | US-Texas | Austin Cirrascale Colo | 10.235.28.121 |
-| SMC-SC-DI09-03.dh144.dcgpu | US-BayArea | Santa Clara DH144 Lab | 10.216.113.229 |
-
-If you don't have a persistent volume, you can request one by filing a ticket here https://ontrack-internal.amd.com/projects/OSSCI/summary
-
-Specify the Region and size you want the PV to be in the ticket
+Specify the Region and size you want the PV to be in the ticket, and you will be provided with the name of a PV you can use
  
 ## Creating a persistent volume claim
 
@@ -27,6 +14,7 @@ Next, create a persistent volume claim using the template in `sample-persistent-
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
+  # You will need to use this name when assigning a mount to this claim
   name: my-nfs-pvc
   namespace: dev
 spec:
@@ -34,9 +22,11 @@ spec:
     - ReadWriteMany
   resources:
     requests:
+      # Put the amount of space you want to claim here.
+      # should be equal to or less than the space requested
       storage: 1Gi
   storageClassName: "nfs"
-  volumeName: <persistent-volume-name>
+  volumeName: <persistent-volume-name> #OSSCI will give you this name
 ```
 make sure the namespace matches your namespace.
 
@@ -67,7 +57,7 @@ the  volume mounts needs to give a path to your NFS directory
 ```
         volumeMounts:
           - name: test-volume
-            mountPath: /mnt/test-storage
+            mountPath: /path/to/nfs/directory
 ```
 
 and volumes needs to give the claim name
@@ -107,15 +97,15 @@ spec:
           ls -la /mnt/test-storage
         # This can be modified is more than 1 gpu is needed.
         volumeMounts:
-          - name: test-volume
-            mountPath: /path/to/nfs/directory
+          - name: test-volume # This is only used internally within the script to link the volumeMount to a Volume
+            mountPath: /path/to/nfs/directory # This is where the data in your PV can be found within the pod
         resources:
           limits:
             amd.com/gpu: 1
       volumes:
-        - name: test-volume
+        - name: test-volume # Make sure this matches the name under volumeMount
           persistentVolumeClaim:
-            claimName: my-nfs-pvc
+            claimName: my-nfs-pvc # put the claim name defined in the previous script here
       restartPolicy: Never
   backoffLimit: 0
 ```
