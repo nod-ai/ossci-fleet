@@ -1,6 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
+  # You will need to use this name when assigning a mount to this claim
   name: my-nfs-pvc
   namespace: dev
 spec:
@@ -8,6 +9,8 @@ spec:
     - ReadWriteMany
   resources:
     requests:
+      # Put the amount of space you want to claim here.
+      # should be equal to or less than the space requested
       storage: 1Gi
   storageClassName: "nfs"
-  volumeName: my-nfs-pv
+  volumeName: <persistent-volume-name> #OSSCI will give you this name
