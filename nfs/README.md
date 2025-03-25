@@ -56,16 +56,16 @@ the  volume mounts needs to give a path to your NFS directory
 
 ```
         volumeMounts:
-          - name: test-volume
-            mountPath: /path/to/nfs/directory
+          - name: test-volume # This is only used internally within the script to link the volumeMount to a Volume
+            mountPath: /path/to/nfs/directory # This is where the data in your PV can be found within the pod
 ```
 
 and volumes needs to give the claim name
 ```
       volumes:
-        - name: test-volume
+        - name: test-volume # Make sure this matches the name under volumeMount
           persistentVolumeClaim:
-            claimName: my-nfs-pvc
+            claimName: my-nfs-pvc # put the claim name defined in the previous script here
 ```
 
 A modified hello world script that has access to a nfs directory would look like this
