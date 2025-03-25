@@ -42,7 +42,23 @@ if ($calculatedHash -eq $expectedHash) {
 }
 
 # Requires elevated powershell
-Write-Host "Adding current directory to PATH..."
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::Machine) + ";$PWD"
+# Check if the current directory is already present in PATH
+$path = [System.Environment]::GetEnvironmentVariable("PATH", [System.EnvironmentVariableTarget]::Machine)
+
+if ($path -split ';' -contains $PWD) {
+    Write-Host "The current directory $PWD is already in the PATH."
+} else {
+    Write-Host "The current directory $PWD is not in the PATH. Adding..."
+    
+    [System.Environment]::SetEnvironmentVariable(
+        "Path",
+        $path + ";$PWD", 
+        [System.EnvironmentVariableTarget]::Machine
+    )
+
+    # Also modify the current context
+    $env:Path = $path + ";$PWD"
+}
 
 Write-Host "Setup completed successfully!"
+Write-Host "If you want to run jobs from a different elevated powershell session, make sure to set the KUBECONFIG env variable again."
