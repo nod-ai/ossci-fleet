@@ -113,7 +113,7 @@ Sometimes you may need to access a VSCode/Jupyter instance that is running in a 
 1. Log into the jump host with the following command:
 
     ```bash
-    ssh -L 9002:localhost:9001 -i <path to your SSH private key> <user>@<jumphost-ip>  
+    ssh -L 9002:localhost:9001 -i <path-to-your-ssh-private-key> <your-user>@<jumphost-ip>  
     ```
 
     Here, we are forwarding port 9001 on the jumphost to port 9002 on your local development machine.
