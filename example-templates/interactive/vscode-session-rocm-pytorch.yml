@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: rocm-pytorch-vscode-<user> # change '<user>' to something identifiable for your user
+spec:
+  restartPolicy: Always
+  containers:
+    - name: rocm-pytorch
+      image: rocm/pytorch:latest
+      command: ["/bin/bash", "-c", "--"]
+      args:
+        - |
+          apt-get update && \
+          apt-get install -y curl gnupg ca-certificates && \
+          curl -fsSL https://code-server.dev/install.sh | sh && \
+          code-server --auth=none --port=9000
+      ports:
+        - containerPort: 9000
+      resources:
+        limits:
+          amd.com/gpu: 1
+# the below is only needed (in the exact indentation) if you want to persistent data from your pod via a PersistentVolumeClaim ('PVC')
+      volumeMounts:
+        - name: pvc-bak
+          mountPath: /mnt/data # when you're done with your work, backup your files to /mnt/data in the pod before exiting & killing it
+  volumes:
+    - name: pvc-bak
+      persistentVolumeClaim:
+        claimName: <pvc> # change this to the name of the PVC you want this container to hook into

@@ -2,8 +2,8 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   # You will need to use this name when assigning a mount to this claim
-  name: my-nfs-pvc
-  namespace: dev
+  name: nfs-pvc-<user> # change '<user>' to something descriptive for your user
+  namespace: <your-namespace> # change this to the namespace assigned to your team
 spec:
   accessModes:
     - ReadWriteMany
