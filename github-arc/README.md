@@ -1,4 +1,4 @@
-# OSSCI Integration with Github Playbook
+# OSSCI Integration with GitHub Playbook
 
 Here is an example [workflow](./test_gpu.yml) that can be setup on a repo to leverage GitHub ARC enabled kubernetes cluster resources.
 
