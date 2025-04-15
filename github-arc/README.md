@@ -4,7 +4,7 @@ Here is an example [workflow](./test_gpu.yml) that can be setup on a repo to lev
 
 ## Architecture
 
-OSSCI is composed of several MI300 clusters. Some of these clusters are hosted within AMD on an internal service called conductor and others are hosted in different public CSPs. This allows each cluster to be on the same network and be able to communicate with each other.
+OSSCI is composed of several MI300 clusters. Some of these clusters are hosted on-prem within AMD on an internal service called conductor and others are hosted in different CSPs. This allows each cluster to be on the same network and be able to communicate with each other.
 
 ### Kubespray
 
@@ -14,11 +14,11 @@ In our setup, use containerd for our container runtime, Calico for our network p
 
 ### Managed Kubernetes
 
-When working with CSPs, we leverage the CSP's managed kubernetes offering if well supported such as AKS on Azure. In the overall architecture, it serves the same purpose as kubespray on bare metal which we leverage in on-prem clusters.
+When working with CSPs, we leverage the CSP's managed kubernetes offering if it's well supported like AKS on Azure. In the overall architecture, managed kubernetes serves the same purpose as kubespray on bare metal. They are used to bringup the initial kubernetes cluster. 
 
 ### AMD GPU Device Plugin for Kubernetes
 
-It is neccesary for us to deploy the [AMD GPU device plugin](https://github.com/ROCm/k8s-device-plugin) on our cluster. It enables GPU-based workloads in Kubernetes, allowing scheduling and management of containers with AMD GPU access.
+Next, it is neccesary for us to deploy the [AMD GPU device plugin](https://github.com/ROCm/k8s-device-plugin) on our cluster. It enables GPU-based workloads in Kubernetes, allowing scheduling and management of containers with AMD GPU access.
 
 The plugin advertises available GPUs on each node to Kubernetes. When we deploy the plugin, it spins up a DaemonSet that automatically runs on GPU-capable nodes, discovers all GPUs, and registers them with Kubernetes as requestable resources for the node. GPU nodes are automatically labeled, and the scheduler assigns GPU requests to appropriate nodes.
 
