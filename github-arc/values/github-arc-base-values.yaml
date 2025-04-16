@@ -1,0 +1,16 @@
+minRunners: 38
+template:
+  spec:
+    containers:
+      - name: runner
+        image: ghcr.io/gpu-mode/amd-runner:saienduri-full-rocm
+        imagePullPolicy: Always
+        command: ["/home/runner/run.sh"]
+        resources:
+          requests:
+            cpu: 8000m
+            memory: 250000Mi
+            ephemeral-storage: 45Gi
+            amd.com/gpu: 1
+          limits:
+            amd.com/gpu: 1

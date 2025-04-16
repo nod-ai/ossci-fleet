@@ -1,43 +1,13 @@
 # OSSCI Integration with GitHub Playbook
 
-Here is an example [workflow](./test_gpu.yml) that can be setup on a repo to leverage GitHub ARC enabled kubernetes cluster resources.
-
-## Architecture
-
-OSSCI is composed of several MI300 clusters. Some of these clusters are hosted on-prem within AMD on an internal service called conductor and others are hosted in different CSPs. This allows each cluster to be on the same network and be able to communicate with each other.
-
-### Kubespray
-
-We leverage [kubespray](https://github.com/kubernetes-sigs/kubespray) to set up the kubernetes cluster across these nodes on bare metal. Kubespray is an ansible based deployment tool that takes care of installing the essential components such as etcd, kube-apiserver, kube-scheduler, and kube-controller-manager. It also takes care of configuring the networking layer for the cluster. The main value in kubespray is that it allows for great flexibility at each level of the configuration.
-
-In our setup, use containerd for our container runtime, Calico for our network plugin (compatible with GPU workloads), and IPVS (IP Virtual Server) for managing and balancing network traffic between services and pods which is better than the default iptables at scale.
-
-### Managed Kubernetes
-
-When working with CSPs, we leverage the CSP's managed kubernetes offering if it's well supported like AKS on Azure. In the overall architecture, managed kubernetes serves the same purpose as kubespray on bare metal. They are used to bringup the initial kubernetes cluster. 
-
-### AMD GPU Device Plugin for Kubernetes
-
-Next, it is neccesary for us to deploy the [AMD GPU device plugin](https://github.com/ROCm/k8s-device-plugin) on our cluster. It enables GPU-based workloads in Kubernetes, allowing scheduling and management of containers with AMD GPU access.
-
-The plugin advertises available GPUs on each node to Kubernetes. When we deploy the plugin, it spins up a DaemonSet that automatically runs on GPU-capable nodes, discovers all GPUs, and registers them with Kubernetes as requestable resources for the node. GPU nodes are automatically labeled, and the scheduler assigns GPU requests to appropriate nodes.
-
-We can control the number of gpus for our github runners by using the `resources.limits/requests`:
-
-```
-resources:
-    requests:
-      amd.com/gpu: 1
-    limits:
-      amd.com/gpu: 1
-```
+This playbook describes how we integrate GitHub ARC with our OSSCI setup to support CI workloads across projects in a containerized and resource efficient manner.
 
 ### GitHub Actions Runner Controller and Scale Set
 
 ![image](https://github.com/user-attachments/assets/0e81a513-8fa3-45ed-91da-34f5dd33caa6)
 
 
-This part of the architecture allows us to create the connection between GitHub Actions and our k8s cluster. It registers a scale set of runners that we configure under a certain GitHub runner label (`mi300-cluster` in this repo), which we then use in the workflow file to run on our GPU enabled cluster. There are two main components to this piece of the architecture: `GitHub Actions Runner Controller` and `Runner Scale Set`.
+This allows us to create the connection between GitHub Actions and our k8s cluster. It registers a scale set of runners that we configure under a certain GitHub runner label (`mi300-cluster` in this repo), which we then use in the workflow file to run on our GPU enabled cluster. There are two main components to this piece of the architecture: `GitHub Actions Runner Controller` and `Runner Scale Set`.
 
 The runner controller is a Kubernetes controller that manages self-hosted GitHub Actions runners within the cluster. It's main job is to deploy and manage runners dynamically as Kubernetes pods based on incoming workload demand (GitHub events such as Pull Requests that target our cluster label).
 
@@ -47,12 +17,17 @@ More detailed setup details can be found here: https://github.com/nod-ai/AKS-Git
 
 ## Getting Started
 
-This architecture leads to a few questions to consider for preparing our cluster for any GitHub Repository
+The OSSCI team will help setup the controller and scale set, but there are a few requirements for a succesful ARC deployment in k8s.
 
 ### Authentication
 
-To create the connection so that our cluster can communicate with a GitHub Repository and register a runner scale set, the setup requires a GitHub PAT or GitHub App.
+To create the connection so that our cluster can communicate with a GitHub Repository and register a runner scale set, the setup requires a GitHub App.
 More details along with permission scope requirements can be found here: https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners-with-actions-runner-controller/authenticating-to-the-github-api
+
+Please create a secret in your assigned namespace, so this authentication method can be used in kubernetes:
+```
+kubectl create secret generic pre-defined-rocm-secret    --namespace=<your-namespace>   --from-literal=github_app_id=<github-app-id>    --from-literal=github_app_installation_id=<github-app-installation-id>    --from-file=github_app_private_key=<path-to-your-github-app-private-pem-key>
+```
 
 ### GitHub Runner Requirements
 
@@ -60,5 +35,17 @@ More details along with permission scope requirements can be found here: https:/
 2. How many GPUs does each individual runner require?
 3. How many cpu cores should be allocated for each runner?
 4. What should be the minimum and maximum size of the scale set?
+5. Do your workflows use docker to run within container environments?
 
 To answer 4, it is important to consider how long jobs that run on this cluster take and the frequency of these jobs.
+
+### Values File
+
+Based on the requirements above, please provide a values file to the OSSCI team similar to these examples:
+
+1. [github-arc-dind-values.yaml](values/github-arc-dind-values.yaml) (Required if workflows use docker to run within container environments)
+2. [github-arc-base-values.yaml](values/github-arc-base-values.yaml)
+
+### Runner Scale Set Label
+
+Also, please provide a label that we can use for your scale set deployment. This is the label that we target for the runs-on field in github workflows as seen in [sample-workflow](test_gpu.yml)
