@@ -104,6 +104,36 @@ Please delete your interactive pod after you are done using.
 kubectl delete pod <pod-name> -n <namespace>
 ```
 
+#### Interacting with Pod in Jumphost-protected Cluster & Persisting Data
+
+Sometimes you may need to access a VSCode/Jupyter instance that is running in a pod on a cluster only accessible via a jump host (e.g. in TensorWave). Using the [`vscode-session-rocm-pytorch.yml`](/example-templates/interactive/vscode-session-rocm-pytorch.yml) pod spec as example, follow the below steps:
+
+0. If you need to persist data from your pod, follow the instructions in [`nfs/`](/nfs/README.md) to create a PersistentVolumeClaim in your assigned namespace, modifying [`sample-persistent-volume-claim.yaml`](/nfs/sample-persistent-volume-claim.yaml) as specified.
+
+1. Log into the jump host with the following command:
+
+    ```bash
+    ssh -L 9002:localhost:9001 -i <path-to-your-ssh-private-key> <your-user>@<jumphost-ip>  
+    ```
+
+    Here, we are forwarding port 9001 on the jumphost to port 9002 on your local development machine.
+
+2. On the jump host, create a copy of the `vscode-session-rocm-pytorch.yml` pod spec, modifying it as specified in the file.
+
+    ```bash
+    vim vscode-session-rocm-pytorch.yml
+    # modify and save the pod spec as needed
+    ```
+
+3. Create the pod on your designated namespace, and then port-forward the necessary port (in this case, 9000, but can adjust as needed in your pod spec) to port 9001 on your jump host as follows:
+
+    ```bash
+    kubectl apply -f vscode-session-rocm-pytorch.yml -n <your-namespace>
+    kubectl port-forward <your-pod> -n <your-namespace> 9001:9000
+    ```
+
+4. In your local development environment, you should be able to access VSCode (or whatever else you wanted to port-forward) at http://localhost:9002 in a browser.
+
 ### Option 4: Multi Node Training Workload
 
 If you want to run a jax multi node training job, please use the `example-templates/workloads/jax-training-template`.
