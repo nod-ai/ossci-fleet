@@ -12,5 +12,4 @@ spec:
       # Put the amount of space you want to claim here.
       # should be equal to or less than the space requested
       storage: 1Gi
-  storageClassName: "nfs"
-  volumeName: <persistent-volume-name> #OSSCI will give you this name
+  storageClassName: "nfs-sc"

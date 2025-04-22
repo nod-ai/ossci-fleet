@@ -25,8 +25,7 @@ spec:
       # Put the amount of space you want to claim here.
       # should be equal to or less than the space requested
       storage: 1Gi
-  storageClassName: "nfs"
-  volumeName: <persistent-volume-name> #OSSCI will give you this name
+  storageClassName: "nfs-sc"
 ```
 make sure the namespace matches your namespace.
 
@@ -34,7 +33,8 @@ this can then be applied with `kubectl apply -f sample-persistent-volume-claim.y
 
 ## Verifying your PVC is set up correctly
 
-you can run `kubectl get pv` with this expected output
+you can run `kubectl get pv` with this expected output  
+*Recently the methodology for creating a pv was changed, this might not show up*
 ```
 NAME        CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS        CLAIM                 STORAGECLASS    VOLUMEATTRIBUTESCLASS   REASON   AGE
 my-nfs-pv   1Gi        RWX            Retain           Bound         dev/my-nfs-pvc        nfs             <unset>                          34m
@@ -43,10 +43,10 @@ my-nfs-pv   1Gi        RWX            Retain           Bound         dev/my-nfs-
 and `kubectl get pvc -n <namespace>`
 ```
 NAME         STATUS        VOLUME      CAPACITY   ACCESS MODES   STORAGECLASS    VOLUMEATTRIBUTESCLASS   AGE
-my-nfs-pvc   Bound         my-nfs-pv   1Gi        RWX            nfs             <unset>                 30m
+my-nfs-pvc   Bound         my-nfs-pv   1Gi        RWX            nfs-sc          <unset>                 30m
 ```
 
-To confirm that the status of each is `Bound` and the storage class is `nfs`
+To confirm that the status of each is `Bound` and the storage class is `nfs-sc`
 
 ## Giving your job access to your PVC
 
