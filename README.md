@@ -1,22 +1,22 @@
 # OSSCI Cluster User Guide
 
-This guide describes how to setup your environment from anywhere on the **AMD network or VPN** to access and utilize the AMD OSSCI Cluster.
-All the nodes in this cluster are MI300x. We have setup infrastructure so that these nodes are behind a kubernetes scheduler. This provides us with an easy way to allocate MI300x resources on demand instead of reserving and blocking off whole nodes. The goal is to improve our utilization of this scarce resource while making it available to a much larger crowd.
+This is a general guide on how to setup your environment and utilize one of the AMD OSSCI clusters.
+We have setup infrastructure so that these nodes are behind a kubernetes scheduler. This provides us with an easy way to allocate MI300x resources on demand instead of reserving and blocking off whole nodes. The goal is to improve our utilization of this scarce resource while making it available to a much larger crowd.
 
 ## Step 1: Kubernetes Setup
-Please download anon.conf into your directory from `Getting Started` section in http://u.amd.com/ossci-cluster if you are generally testing the ossci-fleet.
-If you already have a `KUBECONFIG` file provided to you to access a certain cluster with certain roles, please use that to access.
+Please use the kubeconfig that has been provisioned to you for one of our clusters by the OSSCI team in this section.
+If not already given a kubeconfig, please download anon.conf into your directory from `Getting Started` section in http://u.amd.com/ossci-cluster if you want to generally test on our Conductor Cluster (requires VPN or AMD network access).
 Run these two commands to pull in all the required dependencies and set the appropriate configurations to enable kubernetes on your system:
 
 Linux:
 ```
-export KUBECONFIG = "/path/to/your/anon.conf"
+export KUBECONFIG = "/path/to/your/kubeconfig.conf"
 ./linux/setup_k8s.sh
 ```
 
 Windows PowerShell (elevated permissions required, so run as admin):
 ```
-$env:KUBECONFIG = "C:\path\to\your\anon.conf"
+$env:KUBECONFIG = "C:\path\to\your\kubeconfig.conf"
 .\windows\setup_k8s.ps1
 ```
 
