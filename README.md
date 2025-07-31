@@ -88,6 +88,8 @@ kubectl port-forward -n <namespace> <pod-name> <port-number-local>:<port-number-
 The port forward command allows you to forward a port from your local machine to the port number used in the pod yml, so you can access the server locally.
 Now, you can use vscode on your browser at `http://localhost:<port-number-local>`
 
+If interested in building and using [TheRock](https://github.com/ROCm/TheRock), a lightweight open source build platform for HIP and ROCm, in an interactive environment, please refer to the [therock.md](example-templates/interactive/the-rock/therock.md).
+
 #### Jupyter Notebook
 
 
