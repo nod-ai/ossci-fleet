@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{POD_NAME}}
+spec:
+  containers:
+  - name: interactive-shell
+    image: ubuntu:24.04
+    command:
+      - /bin/bash
+      - -c
+      - |
+        apt-get update && \
+        apt-get install -y curl && \
+        curl -fsSL https://code-server.dev/install.sh | sh && \
+        code-server --auth none --port 9000
+    tty: true
+    stdin: true
+    resources:
+      limits:
+        amd.com/gpu: 1
