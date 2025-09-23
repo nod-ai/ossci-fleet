@@ -1,26 +1,14 @@
 # OSSCI Cluster User Guide
 
-This guide describes how to setup your environment from anywhere on the **AMD network or VPN** to access and utilize the AMD OSSCI Cluster.
+This guide describes how to setup your environment to access and utilize the AMD OSSCI Fleet.
 All the nodes in this cluster are MI300x. We have setup infrastructure so that these nodes are behind a kubernetes scheduler. This provides us with an easy way to allocate MI300x resources on demand instead of reserving and blocking off whole nodes. The goal is to improve our utilization of this scarce resource while making it available to a much larger crowd.
 
 ## Step 1: Kubernetes Setup
-Please download anon.conf into your directory from `Getting Started` section in http://u.amd.com/ossci-cluster if you are generally testing the ossci-fleet.
-If you already have a `KUBECONFIG` file provided to you to access a certain cluster with certain roles, please use that to access.
-Run these two commands to pull in all the required dependencies and set the appropriate configurations to enable kubernetes on your system:
 
-Linux:
-```
-export KUBECONFIG = "/path/to/your/anon.conf"
-./linux/setup_k8s.sh
-```
+File a ticket [here](https://amd.atlassian.net/wiki/spaces/SHARK/pages/568010792/Shark+Platform+Customer+Onboarding+Support#New-Customer---Onboarding) to be onboarded to the OSSCI Fleet.
 
-Windows PowerShell (elevated permissions required, so run as admin):
-```
-$env:KUBECONFIG = "C:\path\to\your\anon.conf"
-.\windows\setup_k8s.ps1
-```
+Please follow the guide for the cluster you have been onboarded to in this [setup guide folder](https://amd.atlassian.net/wiki/spaces/SHARK/pages/568010792/Shark+Platform+Customer+Onboarding+Support).
 
-Refer to https://kubernetes.io/docs/tasks/tools/ if you would rather install kubectl manually.
 
 ## Step 2: Run Jobs on the Cluster
 
@@ -79,16 +67,7 @@ Please use your assigned namespace in the kubernetes cluster.
 
 #### Visual Studio Code
 
-
-To start your vscode server session:
-```
-kubectl apply -f ./example-templates/interactive/vscode-session.yml -n <namespace>
-kubectl port-forward -n <namespace> <pod-name> <port-number-local>:<port-number-pod>
-```
-The port forward command allows you to forward a port from your local machine to the port number used in the pod yml, so you can access the server locally.
-Now, you can use vscode on your browser at `http://localhost:<port-number-local>`
-
-If interested in building and using [TheRock](https://github.com/ROCm/TheRock), a lightweight open source build platform for HIP and ROCm, in an interactive environment, please refer to the [therock.md](example-templates/interactive/the-rock/therock.md).
+Please follow [VSCode Setup Instructions](./example-templates/interactive/vscode/README.md) to setup an interactive VSCode session.
 
 #### Jupyter Notebook
 
