@@ -1,53 +1,49 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
 # Default values
-POD_NAME="interactive-vscode"
+POD_NAME="interactive-vscode-$(date +%s)-$RANDOM"
 LOCAL_PORT="8000"
 REMOTE_PORT="9000"
-TEMP_YAML="vscode-session-temp.yml"
+# Get the directory where this script resides (absolute path)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TEMP_YAML="${SCRIPT_DIR}/vscode-session-temp.yml"
 
 if [ $# -lt 2 ]; then
-    echo "Usage: $0 <namespace> <pvc-claim-name|none>"
+    echo "Usage: $0 <namespace> <pvc-claim-name>"
     echo "  <namespace>          : Kubernetes namespace to use (required)"
-    echo "  <pvc-claim-name|none>: PVC claim name to mount for persistent storage, or 'none' if you don't want a PVC"
+    echo "  <pvc-claim-name>: PVC claim name to mount for persistent storage"
     exit 1
 fi
 
 NAMESPACE="$1"
 PVC_CLAIM_NAME="$2"
-
-# Choose template
-if [ "$PVC_CLAIM_NAME" = "none" ]; then
-    YAML_TEMPLATE="vscode-session-no-pvc.yml"
-else
-    YAML_TEMPLATE="vscode-session-pvc.yml"
-fi
+YAML_TEMPLATE="${SCRIPT_DIR}/vscode-session-pvc.yml"
 
 CLEANING_UP=false
 
 cleanup() {
-    # Prevent recursive cleanup calls
-    if [ "$CLEANING_UP" = true ]; then
-        return
-    fi
+    # Prevent recursive cleanup
+    $CLEANING_UP && return
     CLEANING_UP=true
-    trap - SIGINT SIGTERM
+
     echo ""
-    echo "Caught signal, cleaning up..."
-    echo "Deleting pod '$POD_NAME' in namespace '$NAMESPACE'..."
+    echo "Cleaning up (exit code: $EXIT_CODE)..."
+    trap - SIGINT SIGTERM EXIT
+
     if kubectl delete pod "$POD_NAME" -n "$NAMESPACE" --grace-period=30 2>/dev/null; then
         echo "Pod deleted successfully."
     else
         echo "Warning: Pod may have already been deleted or does not exist."
     fi
+
     rm -f "$TEMP_YAML"
     echo "Cleanup complete."
-    exit 0
+    exit "$EXIT_CODE"
 }
 
 # Set up trap to catch SIGINT (Ctrl+C) and SIGTERM
-trap cleanup SIGINT SIGTERM
+trap 'EXIT_CODE=$?; cleanup' SIGINT SIGTERM EXIT
 
 # Check if kubectl is available
 if ! command -v kubectl &> /dev/null; then
@@ -63,11 +59,7 @@ fi
 echo "Preparing YAML from template: $YAML_TEMPLATE"
 
 # Render YAML
-if [ "$PVC_CLAIM_NAME" = "none" ]; then
-    sed "s/{{POD_NAME}}/${POD_NAME}/g" "$YAML_TEMPLATE" > "$TEMP_YAML"
-else
-    sed -e "s/{{POD_NAME}}/${POD_NAME}/g" -e "s/{{PVC_CLAIM_NAME}}/${PVC_CLAIM_NAME}/g" "$YAML_TEMPLATE" > "$TEMP_YAML"
-fi
+sed -e "s/{{POD_NAME}}/${POD_NAME}/g" -e "s/{{PVC_CLAIM_NAME}}/${PVC_CLAIM_NAME}/g" "$YAML_TEMPLATE" > "$TEMP_YAML"
 
 # Delete existing pod if needed
 echo "Checking if pod '$POD_NAME' exists in namespace '$NAMESPACE'..."
@@ -89,7 +81,7 @@ fi
 
 echo "Pod is ready!"
 echo "Waiting for service to start..."
-sleep 20
+sleep 15
 
 echo "Starting port-forward from localhost:$LOCAL_PORT to pod:$REMOTE_PORT..."
 echo "You can now access VSCode at http://localhost:$LOCAL_PORT"

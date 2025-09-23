@@ -4,20 +4,9 @@ The OSSCI Fleet aims to provide central infrastructure to enable developer acces
 We hope that this infrastructure will serve as the foundation for AMD's AI development workflow, supporting both internal teams and external contributors.
 This guide covers how to build and test [TheRock](https://github.com/ROCm/TheRock), a lightweight open source build platform for HIP and ROCm, using the OSSCI platform.
 
-# OSSCI Setup
+# OSSCI VSCode Setup
 
-If you haven't already, please refer to [Kubernetes Setup](https://github.com/nod-ai/ossci-fleet/blob/main/README.md#step-1-kubernetes-setup) instructions to pull in all the required dependencies for working with kubernetes clusters on your system.
-
-To start a VSCode interactive session in your assigned kubernetes namespace with persistent storage:
-
-```bash
-# pass "none" for <assigned-pvc> if persistent storage is not desired
-./run-vscode-interactive <assigned-k8s-namespace> <assigned-pvc>
-```
-
-Once started, access VSCode at: http://localhost:8000
-
-If user specifies PVC to use, the script automatically makes your persistent storage directory available at `/ossci`. Please make sure to use this directory for your development, so all your work and data is persisted.
+Please follow [VSCode Setup Instructions](../vscode/README.md) to setup an interactive VSCode session.
 
 # TheRock
 

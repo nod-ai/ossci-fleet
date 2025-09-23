@@ -3,8 +3,13 @@ kind: Pod
 metadata:
   name: {{POD_NAME}}
 spec:
+  volumes:
+  - name: therock-vol
+    persistentVolumeClaim:
+      claimName: {{PVC_CLAIM_NAME}}
   containers:
   - name: interactive-shell
+    # Docker image to use for the interactive vscode session.
     image: ubuntu:24.04
     command:
       - /bin/bash
@@ -16,6 +21,10 @@ spec:
         code-server --auth none --port 9000
     tty: true
     stdin: true
+    volumeMounts:
+      - name: therock-vol
+        mountPath: /ossci
+        readOnly: false
     resources:
       limits:
         amd.com/gpu: 1
