@@ -4,7 +4,7 @@ set -euo pipefail
 EXIT_CODE=0
 
 # Default values
-POD_NAME="interactive-vscode-$(date +%s)-$RANDOM"
+POD_NAME="interactive-vscode-${USER}-$(date +%s)-$RANDOM"
 LOCAL_PORT="8000"
 REMOTE_PORT="9000"
 # Get the directory where this script resides (absolute path)
@@ -31,7 +31,7 @@ cleanup() {
 
     echo ""
     echo "Cleaning up (exit code: $EXIT_CODE)..."
-    trap - SIGINT SIGTERM EXIT
+    trap - SIGINT EXIT
 
     if kubectl delete pod "$POD_NAME" -n "$NAMESPACE" --grace-period=30 2>/dev/null; then
         echo "Pod deleted successfully."
@@ -44,8 +44,8 @@ cleanup() {
     exit "$EXIT_CODE"
 }
 
-# Set up trap to catch SIGINT (Ctrl+C), SIGTERM, and EXIT
-trap 'EXIT_CODE=$?; cleanup' SIGINT SIGTERM EXIT
+# Set up trap to catch SIGINT (Ctrl+C) and EXIT
+trap 'EXIT_CODE=$?; cleanup' SIGINT EXIT
 
 # Check if kubectl is available
 if ! command -v kubectl &> /dev/null; then
@@ -83,7 +83,14 @@ fi
 
 echo "Pod is ready!"
 echo "Waiting for service to start..."
-sleep 15
+
+# Wait until port 9000 is listening inside the pod
+echo "Waiting for VSCode service on port $REMOTE_PORT to be ready..."
+until kubectl exec -n "$NAMESPACE" "$POD_NAME" -- curl -fs http://localhost:$REMOTE_PORT/ >/dev/null 2>&1; do
+    echo "VSCode not ready yet, waiting..."
+    sleep 10
+done
+echo "VSCode is ready!"
 
 echo "Starting port-forward from localhost:$LOCAL_PORT to pod:$REMOTE_PORT..."
 echo "You can now access VSCode at http://localhost:$LOCAL_PORT"
