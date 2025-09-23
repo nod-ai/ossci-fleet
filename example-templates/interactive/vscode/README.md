@@ -18,6 +18,8 @@ Please follow [PVC Provisioning Instructions](https://amd.atlassian.net/wiki/spa
 
 ## VSCode Setup
 
+Feel free to edit [vscode template](./vscode-session-pvc.yml) if you would like to change the docker image or number of gpus that the VSCode interactive session comes up with.
+
 To start a VSCode interactive session in your assigned kubernetes namespace and PVC (Persistent Volume Claim) 
 that you created for persistent storage:
 
