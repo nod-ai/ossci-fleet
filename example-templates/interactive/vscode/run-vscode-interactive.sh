@@ -1,6 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
+EXIT_CODE=0
+
 # Default values
 POD_NAME="interactive-vscode-$(date +%s)-$RANDOM"
 LOCAL_PORT="8000"
@@ -42,7 +44,7 @@ cleanup() {
     exit "$EXIT_CODE"
 }
 
-# Set up trap to catch SIGINT (Ctrl+C) and SIGTERM
+# Set up trap to catch SIGINT (Ctrl+C), SIGTERM, and EXIT
 trap 'EXIT_CODE=$?; cleanup' SIGINT SIGTERM EXIT
 
 # Check if kubectl is available
@@ -100,5 +102,3 @@ if ! kubectl port-forward -n "$NAMESPACE" "$POD_NAME" "$LOCAL_PORT:$REMOTE_PORT"
         echo "Pod no longer exists."
     fi
 fi
-
-cleanup

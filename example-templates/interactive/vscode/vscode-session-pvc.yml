@@ -4,7 +4,7 @@ metadata:
   name: {{POD_NAME}}
 spec:
   volumes:
-  - name: therock-vol
+  - name: vscode-vol
     persistentVolumeClaim:
       claimName: {{PVC_CLAIM_NAME}}
   containers:
@@ -22,7 +22,7 @@ spec:
     tty: true
     stdin: true
     volumeMounts:
-      - name: therock-vol
+      - name: vscode-vol
         mountPath: /ossci
         readOnly: false
     resources:
