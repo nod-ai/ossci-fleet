@@ -1,0 +1,5 @@
+{
+  "namespace": "ossci-test",
+  "pvc": "ossci-test-pvc",
+  "public_ssh_key_path": "/home/sai/.ssh/ossci.pub"
+}
