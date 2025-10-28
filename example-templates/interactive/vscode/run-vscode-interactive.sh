@@ -3,9 +3,11 @@ set -euo pipefail
 
 EXIT_CODE=0
 
+# Default values
 POD_NAME="interactive-vscode-${USER}-$(date +%s)-$RANDOM"
 LOCAL_PORT="8000"
 REMOTE_PORT="9000"
+# Get the directory where this script resides (absolute path)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TEMP_YAML="${SCRIPT_DIR}/vscode-session-temp.yml"
 CONFIG_FILE="${SCRIPT_DIR}/config.json"
@@ -45,6 +47,7 @@ YAML_TEMPLATE="${SCRIPT_DIR}/vscode-session-${MODE}.yml"
 
 CLEANING_UP=false
 cleanup() {
+    # Prevent recursive cleanup
     $CLEANING_UP && return
     CLEANING_UP=true
 
@@ -52,11 +55,18 @@ cleanup() {
     echo "Cleaning up (exit code: $EXIT_CODE)..."
     trap - SIGINT EXIT
 
-    kubectl delete pod "$POD_NAME" -n "$NAMESPACE" --grace-period=30 2>/dev/null || true
+    if kubectl delete pod "$POD_NAME" -n "$NAMESPACE" --grace-period=30 2>/dev/null; then
+        echo "Pod deleted successfully."
+    else
+        echo "Warning: Pod may have already been deleted or does not exist."
+    fi
+
     rm -f "$TEMP_YAML"
     echo "Cleanup complete."
     exit "$EXIT_CODE"
 }
+
+# Set up trap to catch SIGINT (Ctrl+C) and EXIT
 trap 'EXIT_CODE=$?; cleanup' SIGINT EXIT
 
 # kubectl check
@@ -133,4 +143,3 @@ else
     echo ""
     kubectl port-forward -n "$NAMESPACE" "$POD_NAME" 2222:22
 fi
-
