@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{POD_NAME}}
+spec:
+  volumes:
+    - name: home-vol
+      persistentVolumeClaim:
+        claimName: {{PVC_CLAIM_NAME}}
+    - name: ssh-key
+      secret:
+        secretName: vscode-ssh-key
+  securityContext:
+    runAsUser: 1001
+    runAsGroup: 1001
+    fsGroup: 1001
+  containers:
+    - name: vscode-ssh
+      # Docker image to use for the interactive vscode session.
+      # Can change to any image that builds off this one.
+      image: ghcr.io/nod-ai/ossci-gitops/ossci-dev:main@sha256:4d76f74015ac2345ee17ef182921e00bc8d24feee39e36ae91906e2979e3c93e
+      command:
+        - /bin/bash
+        - -c
+        - |
+          set -eux
+          sudo apt-get update && sudo apt-get install -y sudo openssh-server curl vim
+
+          # Ensure proper ownership
+          sudo chown -R ossci:ossci /home/ossci
+
+          # Setup SSH access
+          mkdir -p /home/ossci/.ssh
+          cp /mnt/sshkey/authorized_keys /home/ossci/.ssh/authorized_keys
+          chmod 700 /home/ossci/.ssh
+          chmod 600 /home/ossci/.ssh/authorized_keys
+
+          # Start SSH daemon
+          sudo mkdir -p /var/run/sshd
+          sudo /usr/sbin/sshd -D
+      volumeMounts:
+        - name: home-vol
+          mountPath: /home/ossci
+          readOnly: false
+        - name: ssh-key
+          mountPath: /mnt/sshkey
+          readOnly: true
+      resources:
+        # Number of gpus available in the interactive vscode session.
+        limits:
+          amd.com/gpu: 1
