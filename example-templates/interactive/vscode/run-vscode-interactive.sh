@@ -138,6 +138,8 @@ else
     echo "Then enter:"
     echo "   ossci@127.0.0.1:2222  "
     echo ""
+    echo "or directly from your terminal:"
+    echo "   ssh -p 2222 ossci@localhost"
     echo "Your SSH public key has already been added to the pod."
     echo "Press Ctrl+C to stop and clean up."
     echo ""

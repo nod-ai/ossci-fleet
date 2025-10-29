@@ -7,14 +7,9 @@ This guide covers how to start an interactive vscode session.
 
 If you haven't already, please refer to [Kubernetes Setup](https://github.com/nod-ai/ossci-fleet/blob/main/README.md#step-1-kubernetes-setup) instructions to onboard onto an OSSCI cluster.
 
-If you are planning to use a remote host to start this interactive VSCode session, please ssh tunnel so that the 
-web server that gets started is available on your local machine:
-
-```bash
-ssh -L 8000:localhost:8000 user@hostname
-```
-
 Please follow [PVC Provisioning Instructions](https://amd.atlassian.net/wiki/spaces/SHARK/pages/1147359911/How+To+Create+Persistent+Volume+Claims) to create a Persistent Volume Claim for persistent storage.
+
+Update [config.json](./config.json) to your assigned namespace, PVC, and path to public ssh key. The SSH key is the public ssh key of the host that you want to use to remote connect with VSCode or ssh directly in terminal to the pod.
 
 ## VSCode Setup
 
@@ -36,6 +31,12 @@ or directly from your terminal:
 
 ssh -p 2222 ossci@localhost
 
+If you are planning to use a remote host to start this interactive VSCode session, please ssh tunnel so that the ssh session that gets started is available on your local machine:
+
+```bash
+ssh -L 2222:localhost:2222 user@hostname
+```
+
 ### Web Mode
 
 Runs a browser-accessible VSCode server inside a pod.
@@ -45,6 +46,12 @@ Access it in your browser at:
 
 http://localhost:8000
 
+If you are planning to use a remote host to start this interactive VSCode session, please ssh tunnel so that the ssh session that gets started is available on your local machine:
+
+```bash
+ssh -L 8000:localhost:8000 user@hostname
+```
+
 ### Usage
 
 ```bash
@@ -53,7 +60,7 @@ cd ossci-fleet/example-templates/interactive/vscode
 ./run-vscode-interactive.sh <web|ssh>
 ```
 
-The script reads your configuration from [config.json](./config.json) (namespace, PVC, SSH key) and automatically deploys the appropriate VSCode pod in your namespace. The SSH key is the public ssh key of the host that you want to use to remote connect with VSCode or ssh directly in terminal to the pod.
+The script reads your configuration from [config.json](./config.json) (namespace, PVC, SSH key) and automatically deploys the appropriate pod in your namespace.
 
 Feel free to edit [vscode ssh](./vscode-session-ssh.yml) or [vscode web](./vscode-session-web.yml) templates if you would like to change the docker image or number of gpus that the VSCode interactive session comes up with.
 

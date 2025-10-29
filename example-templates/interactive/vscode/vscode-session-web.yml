@@ -3,13 +3,6 @@ kind: Pod
 metadata:
   name: {{POD_NAME}}
 spec:
-  nodeSelector:
-    kubernetes.io/hostname: chi-mi325x-pod2-026
-  tolerations:
-    - key: "demo"
-      operator: "Equal"
-      value: "yes"
-      effect: "NoSchedule"
   volumes:
     - name: home-vol
       persistentVolumeClaim:

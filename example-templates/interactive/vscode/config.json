@@ -1,5 +1,5 @@
 {
   "namespace": "ossci-test",
   "pvc": "ossci-test-pvc",
-  "public_ssh_key_path": "/home/user/.ssh/ossci.pub"
+  "public_ssh_key_path": "/home/esaimana/.ssh/ossci.pub"
 }
