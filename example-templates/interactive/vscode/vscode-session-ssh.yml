@@ -9,7 +9,7 @@ spec:
         claimName: {{PVC_CLAIM_NAME}}
     - name: ssh-key
       secret:
-        secretName: vscode-ssh-key
+        secretName: vscode-ssh-key-{{USER}}
   securityContext:
     runAsUser: 1001
     runAsGroup: 1001
@@ -34,7 +34,7 @@ spec:
           cp /mnt/sshkey/authorized_keys /home/ossci/.ssh/authorized_keys
           chmod 700 /home/ossci/.ssh
           chmod 600 /home/ossci/.ssh/authorized_keys
-
+          
           # Start SSH daemon
           sudo mkdir -p /var/run/sshd
           sudo /usr/sbin/sshd -D

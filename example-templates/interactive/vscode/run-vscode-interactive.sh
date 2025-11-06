@@ -96,7 +96,10 @@ fi
 
 # Render YAML
 echo "Preparing YAML from template: $YAML_TEMPLATE"
-sed -e "s/{{POD_NAME}}/${POD_NAME}/g" -e "s/{{PVC_CLAIM_NAME}}/${PVC_CLAIM_NAME}/g" "$YAML_TEMPLATE" > "$TEMP_YAML"
+sed -e "s/{{POD_NAME}}/${POD_NAME}/g" \
+    -e "s/{{PVC_CLAIM_NAME}}/${PVC_CLAIM_NAME}/g" \
+    -e "s/{{USER}}/${USER}/g" \
+    "$YAML_TEMPLATE" > "$TEMP_YAML"
 
 echo "Checking if pod '$POD_NAME' exists in namespace '$NAMESPACE'..."
 if kubectl get pod "$POD_NAME" -n "$NAMESPACE" &>/dev/null; then
