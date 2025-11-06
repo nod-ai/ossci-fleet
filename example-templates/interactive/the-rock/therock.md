@@ -100,7 +100,7 @@ View latest nightly artifacts here: https://therock-nightly-tarball.s3.amazonaws
 ```bash
 mkdir therock-tarball && cd therock-tarball
 # For example...
-wget https://therock-nightly-tarball.s3.us-east-2.amazonaws.com/therock-dist-linux-gfx94X-dcgpu-7.0.0rc20250729.tar.gz
+wget https://therock-nightly-tarball.s3.us-east-2.amazonaws.com/therock-dist-linux-gfx950-dcgpu-7.10.0a20251029.tar.gz
 
 mkdir install
 tar -xf *.tar.gz -C install
