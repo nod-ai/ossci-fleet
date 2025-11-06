@@ -34,7 +34,7 @@ spec:
           cp /mnt/sshkey/authorized_keys /home/ossci/.ssh/authorized_keys
           chmod 700 /home/ossci/.ssh
           chmod 600 /home/ossci/.ssh/authorized_keys
-          
+ 
           # Start SSH daemon
           sudo mkdir -p /var/run/sshd
           sudo /usr/sbin/sshd -D
