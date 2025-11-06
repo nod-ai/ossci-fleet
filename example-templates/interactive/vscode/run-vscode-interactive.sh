@@ -87,8 +87,9 @@ if [[ "$MODE" == "ssh" ]]; then
     fi
     TMPDIR=$(mktemp -d)
     cp "$PUB_KEY_PATH" "$TMPDIR/authorized_keys"
-    kubectl -n "$NAMESPACE" delete secret vscode-ssh-key --ignore-not-found
-    kubectl -n "$NAMESPACE" create secret generic vscode-ssh-key --from-file=authorized_keys="$TMPDIR/authorized_keys"
+    SECRET_NAME="vscode-ssh-key-${USER}"
+    kubectl -n "$NAMESPACE" delete secret "$SECRET_NAME" --ignore-not-found
+    kubectl -n "$NAMESPACE" create secret generic "$SECRET_NAME" --from-file=authorized_keys="$TMPDIR/authorized_keys"
     rm -rf "$TMPDIR"
     echo "✅ Created/updated SSH key secret in namespace '$NAMESPACE'."
 fi
