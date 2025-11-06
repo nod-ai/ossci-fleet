@@ -21,15 +21,27 @@ The environment supports two modes — browser-based (web) and SSH-based (ssh).
 Runs a VSCode environment accessible via the VS Code Remote SSH extension.
 The script forwards the pod’s SSH port (22) to your local machine (2222).
 
+Add the following entry to your local `~/.ssh/config`:
+
+```bash
+Host ossci
+  HostName 127.0.0.1
+  User ossci
+  Port 2222
+  IdentityFile \Users\esaimana\.ssh\id_rsa
+  StrictHostKeyChecking no
+  UserKnownHostsFile /dev/null
+```
+
 You can connect either via the VS Code Remote SSH extension:
 
 Remote-SSH: Connect to Host...
-→ ossci@127.0.0.1:2222
+→ ossci
 
 
 or directly from your terminal:
 
-ssh -p 2222 ossci@localhost
+ssh ossci
 
 If you are planning to use a remote host to start this interactive VSCode session, please ssh tunnel so that the ssh session that gets started is available on your local machine:
 

@@ -9,7 +9,7 @@ spec:
         claimName: {{PVC_CLAIM_NAME}}
     - name: ssh-key
       secret:
-        secretName: vscode-ssh-key
+        secretName: vscode-ssh-key-{{USER}}
   securityContext:
     runAsUser: 1001
     runAsGroup: 1001

@@ -96,7 +96,10 @@ fi
 
 # Render YAML
 echo "Preparing YAML from template: $YAML_TEMPLATE"
-sed -e "s/{{POD_NAME}}/${POD_NAME}/g" -e "s/{{PVC_CLAIM_NAME}}/${PVC_CLAIM_NAME}/g" "$YAML_TEMPLATE" > "$TEMP_YAML"
+sed -e "s/{{POD_NAME}}/${POD_NAME}/g" \
+    -e "s/{{PVC_CLAIM_NAME}}/${PVC_CLAIM_NAME}/g" \
+    -e "s/{{USER}}/${USER}/g" \
+    "$YAML_TEMPLATE" > "$TEMP_YAML"
 
 echo "Checking if pod '$POD_NAME' exists in namespace '$NAMESPACE'..."
 if kubectl get pod "$POD_NAME" -n "$NAMESPACE" &>/dev/null; then
@@ -134,13 +137,14 @@ else
     done
     echo ""
     echo "Starting port-forward (localhost:2222 -> pod:22)..."
+    echo "Please make sure your ~/.ssh/config is setup as instructed in README"
     echo "Once active, open VS Code and select:"
     echo "   ➜  'Remote-SSH: Connect to Host...'"
-    echo "Then enter:"
-    echo "   ossci@127.0.0.1:2222  "
+    echo "Then choose:"
+    echo "   ossci  "
     echo ""
     echo "or directly from your terminal:"
-    echo "   ssh -p 2222 ossci@localhost"
+    echo "   ssh ossci"
     echo "Your SSH public key has already been added to the pod."
     echo "Press Ctrl+C to stop and clean up."
     echo ""
