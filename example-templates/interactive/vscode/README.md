@@ -76,6 +76,26 @@ The script reads your configuration from [config.json](./config.json) (namespace
 
 Feel free to edit [vscode ssh](./vscode-session-ssh.yml) or [vscode web](./vscode-session-web.yml) templates if you would like to change the docker image or number of gpus that the VSCode interactive session comes up with.
 
+#### Install ROCm
+
+```bash
+mkdir therock-tarball && cd therock-tarball
+wget https://therock-nightly-tarball.s3.us-east-2.amazonaws.com/therock-dist-linux-gfx94X-dcgpu-7.0.0rc20250729.tar.gz
+mkdir install
+tar -xf *.tar.gz -C install
+```
+
+Find the latest tarballs for all architectures here: https://therock-nightly-tarball.s3.amazonaws.com/index.html
+
+Add the following to your `.bashrc` or `.zshrc`:
+
+```bash
+export PATH=$HOME/therock-tarball/bin:$PATH
+export LD_LIBRARY_PATH=$HOME/therock-tarball/lib
+```
+
+If you would like to use TheRock python packages or build from source, please refer to [therock.md](../the-rock/therock.md)
+
 ### Persistent Storage
 
 Your home directory (/home/ossci) inside the VSCode environment is mounted from your PVC, ensuring that all your code, configurations, and data persist across sessions.
