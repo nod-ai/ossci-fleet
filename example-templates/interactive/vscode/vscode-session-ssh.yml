@@ -26,14 +26,22 @@ spec:
           set -eux
           sudo apt-get update && sudo apt-get install -y sudo openssh-server curl vim
 
-          # Ensure proper ownership
-          sudo chown -R ossci:ossci /home/ossci
+          # Ensure proper ownership. No -R: that was taking very long and the
+          # ownership issue seems to be only about /home/ossci itself.
+          sudo chown ossci:ossci /home/ossci
 
           # Setup SSH access
           mkdir -p /home/ossci/.ssh
           cp /mnt/sshkey/authorized_keys /home/ossci/.ssh/authorized_keys
           chmod 700 /home/ossci/.ssh
           chmod 600 /home/ossci/.ssh/authorized_keys
+
+          # People using the xx.sh script to rsync between a persistent
+          # directory (/home/ossci/xx) and a local directory (/tmp/xx) may have
+          # vscode sessions depending on /tmp/xx being present on startup.
+          # To avoid glitches, let's start with /tmp/xx as a symlink.
+          # Then the xx.sh script will delete it and create /tmp/xx as a dir.
+          ln -s /home/ossci/xx /tmp/xx
 
           # Start SSH daemon
           sudo mkdir -p /var/run/sshd
