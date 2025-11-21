@@ -116,6 +116,9 @@ kubectl wait pod "$POD_NAME" -n "$NAMESPACE" --for=condition=Ready --timeout=300
 echo "Pod is ready!"
 echo "Waiting for service to start..."
 
+# Start following logs in the background.
+kubectl logs --follow -n "$NAMESPACE" "$POD_NAME" &
+
 if [[ "$MODE" == "web" ]]; then
     # Wait for VSCode web server port 9000
     echo "Waiting for VSCode service on port $REMOTE_PORT..."
