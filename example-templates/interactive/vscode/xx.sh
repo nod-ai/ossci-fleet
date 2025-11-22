@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copy this script to your PVC home-directory (/home/ossci).
+# This will get copied to your PVC home-directory (/home/ossci).
 # Then, inside your SSH session on your pod, run:
 #
 #    ~/xx.sh start
@@ -37,19 +37,19 @@ set -e
 
 command="$1"
 persistent_path="$HOME/xx"
-temporary_path="/tmp/xx"
+local_path="/tmp/xx"
 
 function show_usage_and_exit() {
   echo "Usage:"
   echo ""
   echo "    $(basename $0) start"
   echo ""
-  echo "        rsync ${persistent_path} -> ${temporary_path}"
+  echo "        rsync ${persistent_path} -> ${local_path}"
   echo "        registers 'save' command at exit and as hourly cron-job."
   echo ""
   echo "    $(basename $0) save"
   echo ""
-  echo "        rsync ${temporary_path} -> ${persistent_path}"
+  echo "        rsync ${local_path} -> ${persistent_path}"
   echo ""
   exit 1
 }
@@ -75,16 +75,6 @@ then
   mkdir -p "$persistent_path"
 fi
 
-# The temporary path may exist as a symlink to persistent_path, created during
-# startup to avoid glitches with sessions that rely on the temporary path
-# existing on startup. Now is the time to delete it and create the temporary
-# directory.
-if [[ -L "$temporary_path" ]]
-then
-  rm "$temporary_path"
-fi
-mkdir -p "$temporary_path"
-
 rsync_progress_flags="--info=progress2 --no-inc-recursive --human-readable"
 
 function append_line_if_not_already_found() {
@@ -99,10 +89,22 @@ function append_line_if_not_already_found() {
 
 if [[ "$1" == "start" ]]
 then
-  echo "Syncing ${persistent_path} -> ${temporary_path} ..."
-  rsync -a $rsync_progress_flags "${persistent_path}/" "${temporary_path}"
+  echo "Syncing ${persistent_path} -> ${local_path} ..."
+  # Atomic copy: first copy to a .temp destination, then overwrite.
+  local_path_temp="${local_path}.temp"
+  rsync -a $rsync_progress_flags "${persistent_path}/" "${local_path_temp}"
+  # Now overwrite the destination.
+  # The destination path may exist as a symlink to persistent_path, created during
+  # startup to avoid glitches with sessions that rely on the local path
+  # existing on startup. Now is the time to delete it and create the local
+  # directory.
+  if [[ -L "$local_path" ]]
+  then
+    rm "$local_path"
+  fi
+  mv "${local_path_temp}" "$local_path"
 
-  save_command="rsync -a \"${temporary_path}/\" \"${persistent_path}\""
+  save_command="rsync -a \"${local_path}/\" \"${persistent_path}\""
 
   # Append the save_command to Bash and Zsh logout command files.
   append_line_if_not_already_found "$HOME/.bash_logout" "$save_command"
@@ -122,8 +124,8 @@ then
   sudo service cron restart
 elif [[ "$1" == "save" ]]
 then
-  echo "Syncing ${temporary_path} -> ${persistent_path} ..."
-  rsync -a $rsync_progress_flags "${temporary_path}/" "${persistent_path}"
+  echo "Syncing ${local_path} -> ${persistent_path} ..."
+  rsync -a $rsync_progress_flags "${local_path}/" "${persistent_path}"
 else
   show_usage_and_exit
 fi
