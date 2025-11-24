@@ -4,7 +4,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   # Change this name with something specific to you (aka include your username)
-  name: shark-test-job
+  name: amd-shark-test-job
 spec:
   template:
     spec:
@@ -14,7 +14,7 @@ spec:
       nodeSelector:
         dev: "true"
       containers:
-      - name: shark-test-container
+      - name: amd-shark-test-container
         image: rocm/dev-ubuntu-22.04:6.3
         command: ["/bin/bash", "-c"]
         args:
@@ -25,7 +25,7 @@ spec:
           curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash &&
           sudo apt install git -y &&
           sudo apt install python3.11 python3.11-dev python3.11-venv -y &&
-          python3.11 -m venv shark_venv && source shark_venv/bin/activate &&
+          python3.11 -m venv amd-shark_venv && source amd-shark_venv/bin/activate &&
           git clone https://github.com/nod-ai/SHARK-ModelDev.git -b demo &&
           git clone https://github.com/iree-org/iree-turbine.git -b demo &&
           cd SHARK-ModelDev &&
