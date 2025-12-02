@@ -1,15 +1,17 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: {{POD_NAME}}
+  name: interactive-vscode-benjacob-1763815132-18276
 spec:
+  nodeSelector:
+    locale: austin
   volumes:
     - name: home-vol
       persistentVolumeClaim:
-        claimName: {{PVC_CLAIM_NAME}}
+        claimName: iree-dev-benoit-pvc
     - name: ssh-key
       secret:
-        secretName: vscode-ssh-key-{{USER}}
+        secretName: vscode-ssh-key-benjacob
   securityContext:
     runAsUser: 1001
     runAsGroup: 1001
@@ -18,7 +20,7 @@ spec:
     - name: vscode-ssh
       # Docker image to use for the interactive vscode session.
       # Can change to any image that builds off this one.
-      image: ghcr.io/nod-ai/ossci-gitops/ossci-dev:main@sha256:4d76f74015ac2345ee17ef182921e00bc8d24feee39e36ae91906e2979e3c93e
+      image: ghcr.io/nod-ai/ossci-gitops/ossci-dev:iree@sha256:d85aeb85de319c67b8fb945af968cbe9d1acbdfcc4a3b46fc160b26a13893aef 
       command:
         - /bin/bash
         - -c
