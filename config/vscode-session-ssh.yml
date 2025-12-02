@@ -15,11 +15,11 @@ spec:
     # kubectl -n iree-dev create secret generic gpg-key-kdrewnia --from-file=kdrewnia-amd-secret.asc=kdrewnia-amd-secret.asc --from-file=kdrewnia-amd-public.asc=kdrewnia-amd-public.asc
     - name: gpg-key
       secret:
-        secrenName: gpg-key-kdrewnia
+        secretName: gpg-key-kdrewnia
     # Also must be created before first run
     - name: amd-llm-api-token
       secret:
-        secretNane: amd-llm-api-token-kdrewnia
+        secretName: amd-llm-api-token-kdrewnia
   securityContext:
     runAsUser: 1001
     runAsGroup: 1001
@@ -28,7 +28,7 @@ spec:
     - name: vscode-ssh
       # Docker image to use for the interactive vscode session.
       # Can change to any image that builds off this one.
-      image: ghcr.io/krzysz00/kd-iree-dev@sha256:ecbf488042cb4a9637710467450c4eca3f1db34bc79a1899b2d17f7270dfebac
+      image: ghcr.io/krzysz00/kd-iree-dev:latest@sha256:ecbf488042cb4a9637710467450c4eca3f1db34bc79a1899b2d17f7270dfebac
       command:
         - /bin/bash
         - -c
@@ -43,6 +43,11 @@ spec:
           cp /mnt/sshkey/authorized_keys /home/kdrewnia/.ssh/authorized_keys
           chmod 700 /home/kdrewnia/.ssh
           chmod 600 /home/kdrewnia/.ssh/authorized_keys
+
+          if [[ ! -f /home/kdrewnia/.amd-llm-api-token && -f /mnt/amd-llm-api-token/amd-llm-api-token ]]; then
+            cp /mnt/amd-llm-api-token/amd-llm-api-token /home/kdrewnia/.amd-llm-api-token
+            chmod 600 /home/kdrewnia/.amd-llm-api-token
+          fi
 
           # People using the xx.sh script to rsync between a persistent
           # directory (/home/kdrewnia/xx) and a local directory (/tmp/xx) may have
