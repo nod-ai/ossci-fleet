@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{POD_NAME}}
+spec:
+  volumes:
+    - name: home-vol
+      persistentVolumeClaim:
+        claimName: {{PVC_CLAIM_NAME}}
+    - name: ssh-key
+      secret:
+        secretName: vscode-ssh-key-{{USER}}
+    # Note: these are persistent and need to be created before first run with
+    # a command like:
+    # kubectl -n iree-dev create secret generic gpg-key-kdrewnia --from-file=kdrewnia-amd-secret.asc=kdrewnia-amd-secret.asc --from-file=kdrewnia-amd-public.asc=kdrewnia-amd-public.asc
+    - name: gpg-key
+      secret:
+        secrenName: gpg-key-kdrewnia
+    # Also must be created before first run
+    - name: amd-llm-api-token
+      secret:
+        secretNane: amd-llm-api-token-kdrewnia
+  securityContext:
+    runAsUser: 1001
+    runAsGroup: 1001
+    fsGroup: 1001
+  containers:
+    - name: vscode-ssh
+      # Docker image to use for the interactive vscode session.
+      # Can change to any image that builds off this one.
+      image: ghcr.io/krzysz00/kd-iree-dev@sha256:ecbf488042cb4a9637710467450c4eca3f1db34bc79a1899b2d17f7270dfebac
+      command:
+        - /bin/bash
+        - -c
+        - |
+          set -eux
+          # Ensure proper ownership. No -R: that was taking very long and the
+          # ownership issue seems to be only about /home/ossci itself.
+          sudo chown kdrewnia:kdrewnia /home/kdrewnia
+
+          # Setup SSH access
+          mkdir -p /home/kdrewnia/.ssh
+          cp /mnt/sshkey/authorized_keys /home/kdrewnia/.ssh/authorized_keys
+          chmod 700 /home/kdrewnia/.ssh
+          chmod 600 /home/kdrewnia/.ssh/authorized_keys
+
+          # People using the xx.sh script to rsync between a persistent
+          # directory (/home/kdrewnia/xx) and a local directory (/tmp/xx) may have
+          # vscode sessions depending on /tmp/xx being present on startup.
+          # To avoid glitches, let's start with /tmp/xx as a symlink.
+          # Then the xx.sh script will delete it and create /tmp/xx as a dir.
+          # ln -s /home/kdrewnia/xx /tmp/xx
+
+          # Start SSH daemon
+          sudo mkdir -p /var/run/sshd
+          sudo /usr/sbin/sshd -D
+      volumeMounts:
+        - name: home-vol
+          mountPath: /home/kdrewnia
+          readOnly: false
+        - name: ssh-key
+          mountPath: /mnt/sshkey
+          readOnly: true
+        - name: gpg-key
+          mountPath: /mnt/gpgkey
+          readOnly: true
+        - name: amd-llm-api-token
+          mountPath: /mnt/amd-llm-api-token
+          readOnly: true
+
+      resources:
+        # Number of gpus available in the interactive vscode session.
+        limits:
+          amd.com/gpu: 1

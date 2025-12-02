@@ -1,0 +1,5 @@
+{
+  "namespace": "iree-dev",
+  "pvc": "iree-dev-kdrewnia-pvc",
+  "public_ssh_key_path": "/home/kdrewnia/.ssh/id_ed25519.pub"
+}
