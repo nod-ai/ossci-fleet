@@ -7,6 +7,8 @@ spec:
     - name: home-vol
       persistentVolumeClaim:
         claimName: {{PVC_CLAIM_NAME}}
+    - name: home-local-vol
+      emptyDir: {}
     - name: ssh-key
       secret:
         secretName: vscode-ssh-key-{{USER}}
@@ -28,7 +30,7 @@ spec:
     - name: vscode-ssh
       # Docker image to use for the interactive vscode session.
       # Can change to any image that builds off this one.
-      image: ghcr.io/krzysz00/kd-iree-dev:latest@sha256:ecbf488042cb4a9637710467450c4eca3f1db34bc79a1899b2d17f7270dfebac
+      image: ghcr.io/krzysz00/kd-iree-dev:latest@sha256:5f21881c772d093b78b0ed5fa27d586189595934690d2b048cb4976bc580c011
       command:
         - /bin/bash
         - -c
@@ -37,6 +39,14 @@ spec:
           # Ensure proper ownership. No -R: that was taking very long and the
           # ownership issue seems to be only about /home/ossci itself.
           sudo chown kdrewnia:kdrewnia /home/kdrewnia
+          sudo chown kdrewnia:kdrewnia /home/kdrewnia/fast
+
+          mkdir -p /home/kdrewnia/fast-persist
+          # Copy fast data to local storage
+          rsync -a --info=progress2 --human-readable /home/kdrewnia/fast-persist/ /home/kdrewnia/fast
+
+          # Background copies of data from ~/fast to ~/fast-persist using inotify + rsync
+          lsyncd -pidfile /tmp/lsyncd.pid /etc/lsyncd.conf
 
           # Setup SSH access
           mkdir -p /home/kdrewnia/.ssh
@@ -62,6 +72,9 @@ spec:
       volumeMounts:
         - name: home-vol
           mountPath: /home/kdrewnia
+          readOnly: false
+        - name: home-local-vol
+          mountPath: /home/kdrewnia/fast
           readOnly: false
         - name: ssh-key
           mountPath: /mnt/sshkey
