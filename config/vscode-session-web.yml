@@ -25,7 +25,7 @@ spec:
     fsGroup: 1001
   containers:
     - name: vscode-web
-      image: ghcr.io/krzysz00/kd-iree-dev:latest@sha256:5f21881c772d093b78b0ed5fa27d586189595934690d2b048cb4976bc580c011
+      image: ghcr.io/krzysz00/kd-iree-dev:latest@sha256:3f7bf30dc86ab9269e1212225d198ff1efe7cad52bafe9a3355cdbfc88156434
       command:
         - /bin/bash
         - -c
