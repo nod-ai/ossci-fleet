@@ -39,7 +39,7 @@ spec:
           rsync -a --info=progress2 --human-readable /home/kdrewnia/fast-persist/ /home/kdrewnia/fast
 
           # Background copies of data from ~/fast to ~/fast-persist using inotify + rsync
-          lsyncd -pidfile /tmp/lsyncd.pid /etc/lsyncd.conf
+          lsyncd -logfile /home/kdrewnia/lsyncd.log -pidfile /tmp/lsyncd.pid /etc/lsyncd.conf
 
           if [[ ! -f /home/kdrewnia/.amd-llm-api-token && -f /mnt/amd-llm-api-token/amd-llm-api-token ]]; then
             cp /mnt/amd-llm-api-token/amd-llm-api-token /home/kdrewnia/.amd-llm-api-token

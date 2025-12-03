@@ -46,7 +46,7 @@ spec:
           rsync -a --info=progress2 --human-readable /home/kdrewnia/fast-persist/ /home/kdrewnia/fast
 
           # Background copies of data from ~/fast to ~/fast-persist using inotify + rsync
-          lsyncd -pidfile /tmp/lsyncd.pid /etc/lsyncd.conf
+          lsyncd -logfile /home/kdrewnia/lsyncd.log -pidfile /tmp/lsyncd.pid /etc/lsyncd.conf
 
           # Setup SSH access
           mkdir -p /home/kdrewnia/.ssh
