@@ -7,7 +7,7 @@ This guide covers how to start an interactive vscode session.
 
 If you haven't already, please refer to [Kubernetes Setup](https://github.com/nod-ai/ossci-fleet/blob/main/README.md#step-1-kubernetes-setup) instructions to onboard onto an OSSCI cluster.
 
-Please follow [PVC Provisioning Instructions](https://amd.atlassian.net/wiki/spaces/SHARK/pages/1147359911/How+To+Create+Persistent+Volume+Claims) to create a Persistent Volume Claim for persistent storage.
+Please follow [PVC Provisioning Instructions](https://amd.atlassian.net/wiki/spaces/AMD-SHARK/pages/1147359911/How+To+Create+Persistent+Volume+Claims) to create a Persistent Volume Claim for persistent storage.
 
 Update [config.json](./config.json) to your assigned namespace, PVC, and path to public ssh key. The SSH key is the public ssh key of the host that you want to use to remote connect with VSCode or ssh directly in terminal to the pod.
 

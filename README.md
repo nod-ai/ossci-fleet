@@ -5,9 +5,9 @@ All the nodes in this cluster are MI300x. We have setup infrastructure so that t
 
 ## Step 1: Kubernetes Setup
 
-File a ticket [here](https://amd.atlassian.net/wiki/spaces/SHARK/pages/568010792/Shark+Platform+Customer+Onboarding+Support#New-Customer---Onboarding) to be onboarded to the OSSCI Fleet.
+File a ticket [here](https://amd.atlassian.net/wiki/spaces/AMD-SHARK/pages/568010792/AMD-Shark+Platform+Customer+Onboarding+Support#New-Customer---Onboarding) to be onboarded to the OSSCI Fleet.
 
-Please follow the guide for the cluster you have been onboarded to in this [setup guide folder](https://amd.atlassian.net/wiki/spaces/SHARK/pages/568010792/Shark+Platform+Customer+Onboarding+Support).
+Please follow the guide for the cluster you have been onboarded to in this [setup guide folder](https://amd.atlassian.net/wiki/spaces/AMD-SHARK/pages/568010792/AMD-Shark+Platform+Customer+Onboarding+Support).
 
 
 ## Step 2: Run Jobs on the Cluster
