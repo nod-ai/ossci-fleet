@@ -30,7 +30,7 @@ spec:
     - name: vscode-ssh
       # Docker image to use for the interactive vscode session.
       # Can change to any image that builds off this one.
-      image: ghcr.io/krzysz00/kd-iree-dev:latest@sha256:3f7bf30dc86ab9269e1212225d198ff1efe7cad52bafe9a3355cdbfc88156434
+      image: ghcr.io/krzysz00/kd-iree-dev:latest@sha256:1c39c80bcbd0aa482adac1c5b2b4f0d9242b775faa2e3ac04736a4a6519e289c
       command:
         - /bin/bash
         - -c
