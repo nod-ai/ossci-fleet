@@ -37,13 +37,6 @@ spec:
           chmod 700 /home/ossci/.ssh
           chmod 600 /home/ossci/.ssh/authorized_keys
 
-          # People using the xx.sh script to rsync between a persistent
-          # directory (/home/ossci/xx) and a local directory (/tmp/xx) may have
-          # vscode sessions depending on /tmp/xx being present on startup.
-          # To avoid glitches, let's start with /tmp/xx as a symlink.
-          # Then the xx.sh script will delete it and create /tmp/xx as a dir.
-          ln -s /home/ossci/xx /tmp/xx
-
           # Start SSH daemon
           sudo mkdir -p /var/run/sshd
           sudo /usr/sbin/sshd -D
