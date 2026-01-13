@@ -138,6 +138,7 @@ else
         echo "SSH not ready yet, waiting..."
         sleep 5
     done
+    kubectl cp -n "$NAMESPACE" "${SCRIPT_DIR}/xx.sh" "$POD_NAME:xx.sh"
     echo ""
     echo "Starting port-forward (localhost:2222 -> pod:22)..."
     echo "Please make sure your ~/.ssh/config is setup as instructed in README"

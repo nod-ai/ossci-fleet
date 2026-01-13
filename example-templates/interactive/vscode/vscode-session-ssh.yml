@@ -42,7 +42,7 @@ spec:
           # vscode sessions depending on /tmp/xx being present on startup.
           # To avoid glitches, let's start with /tmp/xx as a symlink.
           # Then the xx.sh script will delete it and create /tmp/xx as a dir.
-          ln -s /home/ossci/xx /tmp/xx
+          ln -sf /home/ossci/xx /tmp/
 
           # Start SSH daemon
           sudo mkdir -p /var/run/sshd
