@@ -26,11 +26,12 @@ spec:
     runAsUser: 1001
     runAsGroup: 1001
     fsGroup: 1001
+    fsGroupChangePolicy: OnRootMismatch
   containers:
     - name: vscode-ssh
       # Docker image to use for the interactive vscode session.
       # Can change to any image that builds off this one.
-      image: ghcr.io/krzysz00/kd-iree-dev:latest@sha256:1c39c80bcbd0aa482adac1c5b2b4f0d9242b775faa2e3ac04736a4a6519e289c
+      image: ghcr.io/krzysz00/kd-iree-dev:latest@sha256:6085e4164f27c9c866a829a4f7acb288eb8b935b1023c9ae66351e7220c9588c
       command:
         - /bin/bash
         - -c
