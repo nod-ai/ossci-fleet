@@ -90,8 +90,8 @@ Find the latest tarballs for all architectures here: https://therock-nightly-tar
 Add the following to your `.bashrc` or `.zshrc`:
 
 ```bash
-export PATH=$HOME/therock-tarball/bin:$PATH
-export LD_LIBRARY_PATH=$HOME/therock-tarball/lib
+export PATH=$HOME/therock-tarball/install/bin:$PATH
+export LD_LIBRARY_PATH=$HOME/therock-tarball/install/lib
 ```
 
 If you would like to use TheRock python packages or build from source, please refer to [therock.md](../the-rock/therock.md)
