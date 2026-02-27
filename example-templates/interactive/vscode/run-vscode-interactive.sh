@@ -5,21 +5,30 @@ EXIT_CODE=0
 
 # Default values
 POD_NAME="interactive-vscode-${USER}-$(date +%s)-$RANDOM"
-LOCAL_PORT="8000"
 REMOTE_PORT="9000"
 # Get the directory where this script resides (absolute path)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TEMP_YAML="${SCRIPT_DIR}/vscode-session-temp.yml"
+
+MODE="ssh"
 CONFIG_FILE="${SCRIPT_DIR}/config.json"
 
-MODE=${1:-}
-
-if [[ -z "$MODE" || ( "$MODE" != "web" && "$MODE" != "ssh" ) ]]; then
-  echo "Usage: $0 <web|ssh>"
-  echo "  web : run browser-based VSCode server"
-  echo "  ssh : run remote SSH-accessible VSCode environment"
-  exit 1
-fi
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        web|ssh)
+            MODE="$1"
+            shift
+            ;;
+        --config)
+            CONFIG_FILE="$2"
+            shift 2
+            ;;
+        *)
+            echo "Unknown option: $1"
+            exit 1
+            ;;
+    esac
+done
 
 if [ ! -f "$CONFIG_FILE" ]; then
     echo "Error: config.json not found. Example format:"
@@ -47,6 +56,8 @@ DEV_USER_NAME=$(jq -r '.dev_user // "root"' "$CONFIG_FILE")
 DEV_UID=$(jq -r '.dev_uid // "0"' "$CONFIG_FILE")
 DEV_GID=$(jq -r '.dev_gid // "0"' "$CONFIG_FILE")
 HOME_DIR=$(jq -r '.home_dir // "/home/ossci"' "$CONFIG_FILE")
+LOCAL_SSH_PORT=$(jq -r '.local_ssh_port // "2222"' "$CONFIG_FILE")
+LOCAL_WEB_PORT=$(jq -r '.local_web_port // "8000"' "$CONFIG_FILE")
 
 YAML_TEMPLATE="${SCRIPT_DIR}/vscode-session-${MODE}.yml"
 
@@ -132,10 +143,10 @@ if [[ "$MODE" == "web" ]]; then
     kubectl logs --follow -n "$NAMESPACE" "$POD_NAME" &
 
     echo "VSCode is ready!"
-    echo "Starting port-forward from localhost:$LOCAL_PORT to pod:$REMOTE_PORT..."
-    echo "Access VSCode in your browser at: http://localhost:$LOCAL_PORT"
+    echo "Starting port-forward from localhost:$LOCAL_WEB_PORT to pod:$REMOTE_PORT..."
+    echo "Access VSCode in your browser at: http://localhost:$LOCAL_WEB_PORT"
     echo "Press Ctrl+C to stop and cleanup."
-    kubectl port-forward -n "$NAMESPACE" "$POD_NAME" "$LOCAL_PORT:$REMOTE_PORT"
+    kubectl port-forward -n "$NAMESPACE" "$POD_NAME" "$LOCAL_WEB_PORT:$REMOTE_PORT"
 else
     # Run SSH setup inside the pod via kubectl exec.
     # Pipes setup-ssh.sh into the pod — no ConfigMap needed.
@@ -152,7 +163,7 @@ else
 
     echo ""
     echo "SSH daemon is ready!"
-    echo "Starting port-forward (localhost:2222 -> pod:22)..."
+    echo "Starting port-forward (localhost:$LOCAL_SSH_PORT -> pod:22)..."
     echo "Please make sure your ~/.ssh/config is setup as instructed in README"
     echo "Once active, open VS Code and select:"
     echo "   'Remote-SSH: Connect to Host...'"
@@ -164,5 +175,5 @@ else
     echo "Your SSH public key has already been added to the pod."
     echo "Press Ctrl+C to stop and clean up."
     echo ""
-    kubectl port-forward -n "$NAMESPACE" "$POD_NAME" 2222:22
+    kubectl port-forward -n "$NAMESPACE" "$POD_NAME" "$LOCAL_SSH_PORT:22"
 fi
