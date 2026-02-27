@@ -1,5 +1,6 @@
 {
-  "namespace": "ossci-test",
-  "pvc": "ossci-test-pvc",
-  "public_ssh_key_path": "/home/user/.ssh/ossci.pub"
+  "namespace": "my-namespace",
+  "pvc": "my-pvc",
+  "public_ssh_key_path": "/home/user/.ssh/id_rsa.pub",
+  "image": "rocm/pytorch:latest"
 }
