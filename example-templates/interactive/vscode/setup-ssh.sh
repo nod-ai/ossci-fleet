@@ -12,8 +12,9 @@ echo "=== SSH Setup ==="
 echo "User: ${DEV_USER} (UID=${DEV_UID}, GID=${DEV_GID}, home=${HOME_DIR})"
 
 # --- Install openssh-server and sudo ---
-apt-get update -y
-apt-get install -y openssh-server sudo
+echo "Installing openssh-server..."
+apt-get update -y > /dev/null 2>&1
+apt-get install -y openssh-server sudo > /dev/null 2>&1
 
 # --- Generate SSH host keys if missing ---
 if [ ! -f /etc/ssh/ssh_host_rsa_key ]; then

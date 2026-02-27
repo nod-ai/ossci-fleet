@@ -26,6 +26,8 @@ All settings are in [config.json](./config.json):
 | `dev_gid` | No | `0` | GID for the dev user |
 | `home_dir` | No | `/home/ossci` | PVC mount path (persistent home directory) |
 | `gpu_limit` | No | `1` | Number of AMD GPUs to allocate |
+| `local_ssh_port` | No | `2222` | Local port for SSH forwarding |
+| `local_web_port` | No | `8000` | Local port for web mode forwarding |
 
 ### Using a Custom Image
 
@@ -102,7 +104,14 @@ ssh -L 8000:localhost:8000 user@hostname
 ```bash
 git clone git@github.com:nod-ai/ossci-fleet.git
 cd ossci-fleet/example-templates/interactive/vscode
-./run-vscode-interactive.sh <web|ssh>
+./run-vscode-interactive.sh [--config config.json] <web|ssh>
+```
+
+You can maintain multiple config files for different setups (e.g., different images and local ports for concurrent sessions):
+
+```bash
+./run-vscode-interactive.sh --config config-pytorch.json ssh
+./run-vscode-interactive.sh --config config-ubuntu.json ssh
 ```
 
 The script reads your configuration from [config.json](./config.json) (namespace, PVC, SSH key, image) and automatically deploys the appropriate pod in your namespace.
