@@ -26,9 +26,9 @@ spec:
           sudo apt install git -y &&
           sudo apt install python3.11 python3.11-dev python3.11-venv -y &&
           python3.11 -m venv amd-shark_venv && source amd-shark_venv/bin/activate &&
-          git clone https://github.com/nod-ai/SHARK-ModelDev.git -b demo &&
+          git clone https://github.com/nod-ai/AMD-SHARK-ModelDev.git -b demo &&
           git clone https://github.com/iree-org/iree-turbine.git -b demo &&
-          cd SHARK-ModelDev &&
+          cd AMD-SHARK-ModelDev &&
           pip install --no-compile -r ../iree-turbine/pytorch-cpu-requirements.txt &&
           pip install --pre --upgrade -r ../iree-turbine/requirements.txt &&
           pip install --pre --upgrade -r ../iree-turbine/iree-requirements.txt &&

@@ -9,51 +9,23 @@ spec:
         claimName: {{PVC_CLAIM_NAME}}
     - name: ssh-key
       secret:
-        secretName: vscode-ssh-key-{{USER}}
+        secretName: ssh-key-{{POD_NAME}}
   securityContext:
-    runAsUser: 1001
-    runAsGroup: 1001
-    fsGroup: 1001
+    runAsUser: 0
+    runAsGroup: 0
+    fsGroup: {{DEV_GID}}
+    fsGroupChangePolicy: OnRootMismatch
   containers:
     - name: vscode-ssh
-      # Docker image to use for the interactive vscode session.
-      # Can change to any image that builds off this one.
-      image: ghcr.io/nod-ai/ossci-gitops/ossci-dev:main@sha256:4d76f74015ac2345ee17ef182921e00bc8d24feee39e36ae91906e2979e3c93e
-      command:
-        - /bin/bash
-        - -c
-        - |
-          set -eux
-          sudo apt-get update && sudo apt-get install -y sudo openssh-server curl vim
-
-          # Ensure proper ownership. No -R: that was taking very long and the
-          # ownership issue seems to be only about /home/ossci itself.
-          sudo chown ossci:ossci /home/ossci
-
-          # Setup SSH access
-          mkdir -p /home/ossci/.ssh
-          cp /mnt/sshkey/authorized_keys /home/ossci/.ssh/authorized_keys
-          chmod 700 /home/ossci/.ssh
-          chmod 600 /home/ossci/.ssh/authorized_keys
-
-          # People using the xx.sh script to rsync between a persistent
-          # directory (/home/ossci/xx) and a local directory (/tmp/xx) may have
-          # vscode sessions depending on /tmp/xx being present on startup.
-          # To avoid glitches, let's start with /tmp/xx as a symlink.
-          # Then the xx.sh script will delete it and create /tmp/xx as a dir.
-          ln -s /home/ossci/xx /tmp/xx
-
-          # Start SSH daemon
-          sudo mkdir -p /var/run/sshd
-          sudo /usr/sbin/sshd -D
+      image: {{IMAGE}}
+      command: ["sleep", "infinity"]
       volumeMounts:
         - name: home-vol
-          mountPath: /home/ossci
+          mountPath: {{HOME_DIR}}
           readOnly: false
         - name: ssh-key
           mountPath: /mnt/sshkey
           readOnly: true
       resources:
-        # Number of gpus available in the interactive vscode session.
         limits:
-          amd.com/gpu: 1
+          amd.com/gpu: {{GPU_LIMIT}}
