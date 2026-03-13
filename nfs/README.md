@@ -2,7 +2,7 @@
 
 ## Creating the Persistent Volume
 
-If you don't already have a persistent volume, you can request one by filing a ticket here https://ontrack-internal.amd.com/projects/OSSCI/summary
+If you don't already have a persistent volume, you can request one by filing a ticket here https://amd.atlassian.net/browse/OSSCI.
 
 Specify the Region and size you want the PV to be in the ticket, and you will be provided with the name of a PV you can use
  
