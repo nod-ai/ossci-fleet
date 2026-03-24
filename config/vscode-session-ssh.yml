@@ -11,7 +11,7 @@ spec:
       emptyDir: {}
     - name: ssh-key
       secret:
-        secretName: vscode-ssh-key-{{USER}}
+        secretName: ssh-key-{{POD_NAME}}
     # Note: these are persistent and need to be created before first run with
     # a command like:
     # kubectl -n iree-dev create secret generic gpg-key-kdrewnia --from-file=kdrewnia-amd-secret.asc=kdrewnia-amd-secret.asc --from-file=kdrewnia-amd-public.asc=kdrewnia-amd-public.asc
@@ -23,59 +23,20 @@ spec:
       secret:
         secretName: amd-llm-api-token-kdrewnia
   securityContext:
-    runAsUser: 1001
-    runAsGroup: 1001
-    fsGroup: 1001
+    runAsUser: 0
+    runAsGroup: 0
+    fsGroup: {{DEV_GID}}
     fsGroupChangePolicy: OnRootMismatch
   containers:
     - name: vscode-ssh
-      # Docker image to use for the interactive vscode session.
-      # Can change to any image that builds off this one.
-      image: ghcr.io/krzysz00/kd-iree-dev:latest@sha256:6085e4164f27c9c866a829a4f7acb288eb8b935b1023c9ae66351e7220c9588c
-      command:
-        - /bin/bash
-        - -c
-        - |
-          set -eux
-          # Ensure proper ownership. No -R: that was taking very long and the
-          # ownership issue seems to be only about /home/ossci itself.
-          sudo chown kdrewnia:kdrewnia /home/kdrewnia
-          sudo chown kdrewnia:kdrewnia /home/kdrewnia/fast
-
-          mkdir -p /home/kdrewnia/fast-persist
-          # Copy fast data to local storage
-          rsync -a --info=progress2 --human-readable /home/kdrewnia/fast-persist/ /home/kdrewnia/fast
-
-          # Background copies of data from ~/fast to ~/fast-persist using inotify + rsync
-          lsyncd -logfile /home/kdrewnia/lsyncd.log -pidfile /tmp/lsyncd.pid /etc/lsyncd.conf
-
-          # Setup SSH access
-          mkdir -p /home/kdrewnia/.ssh
-          cp /mnt/sshkey/authorized_keys /home/kdrewnia/.ssh/authorized_keys
-          chmod 700 /home/kdrewnia/.ssh
-          chmod 600 /home/kdrewnia/.ssh/authorized_keys
-
-          if [[ ! -f /home/kdrewnia/.amd-llm-api-token && -f /mnt/amd-llm-api-token/amd-llm-api-token ]]; then
-            cp /mnt/amd-llm-api-token/amd-llm-api-token /home/kdrewnia/.amd-llm-api-token
-            chmod 600 /home/kdrewnia/.amd-llm-api-token
-          fi
-
-          # People using the xx.sh script to rsync between a persistent
-          # directory (/home/kdrewnia/xx) and a local directory (/tmp/xx) may have
-          # vscode sessions depending on /tmp/xx being present on startup.
-          # To avoid glitches, let's start with /tmp/xx as a symlink.
-          # Then the xx.sh script will delete it and create /tmp/xx as a dir.
-          # ln -s /home/kdrewnia/xx /tmp/xx
-
-          # Start SSH daemon
-          sudo mkdir -p /var/run/sshd
-          sudo /usr/sbin/sshd -D
+      image: {{IMAGE}}
+      command: ["sleep", "infinity"]
       volumeMounts:
         - name: home-vol
-          mountPath: /home/kdrewnia
+          mountPath: {{HOME_DIR}}
           readOnly: false
         - name: home-local-vol
-          mountPath: /home/kdrewnia/fast
+          mountPath: {{HOME_DIR}}/fast
           readOnly: false
         - name: ssh-key
           mountPath: /mnt/sshkey
@@ -86,8 +47,6 @@ spec:
         - name: amd-llm-api-token
           mountPath: /mnt/amd-llm-api-token
           readOnly: true
-
       resources:
-        # Number of gpus available in the interactive vscode session.
         limits:
-          amd.com/gpu: 1
+          amd.com/gpu: {{GPU_LIMIT}}

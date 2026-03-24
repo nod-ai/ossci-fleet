@@ -5,43 +5,59 @@ EXIT_CODE=0
 
 # Default values
 POD_NAME="interactive-vscode-${USER}-$(date +%s)-$RANDOM"
-LOCAL_PORT="8000"
 REMOTE_PORT="9000"
 # Get the directory where this script resides (absolute path)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TEMP_YAML="${SCRIPT_DIR}/vscode-session-temp.yml"
+
+MODE="ssh"
 CONFIG_FILE="${SCRIPT_DIR}/config.json"
 
-MODE=${1:-}
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        web|ssh)
+            MODE="$1"
+            shift
+            ;;
+        --config)
+            CONFIG_FILE="$2"
+            shift 2
+            ;;
+        *)
+            echo "Unknown option: $1"
+            exit 1
+            ;;
+    esac
+done
 
-if [[ -z "$MODE" || ( "$MODE" != "web" && "$MODE" != "ssh" ) ]]; then
-  echo "Usage: $0 <web|ssh>"
-  echo "  web : run browser-based VSCode server"
-  echo "  ssh : run remote SSH-accessible VSCode environment"
-  exit 1
-fi
-
-if [[ ! -f "$CONFIG_FILE" ]]; then
+if [ ! -f "$CONFIG_FILE" ]; then
     echo "Error: config.json not found. Example format:"
     cat <<EOF
 {
   "namespace": "my-namespace",
   "pvc": "my-pvc",
   "public_ssh_key_path": "/path/to/id_rsa.pub",
+  "image": "ubuntu:24.04"
 }
 EOF
     exit 1
 fi
 
-# Read config
+# Read config (required fields)
 NAMESPACE=$(jq -r '.namespace' "$CONFIG_FILE")
 PVC_CLAIM_NAME=$(jq -r '.pvc' "$CONFIG_FILE")
 PUB_KEY_PATH=$(jq -r '.public_ssh_key_path' "$CONFIG_FILE")
 
-if [[ "$MODE" != "web" && "$MODE" != "ssh" ]]; then
-    echo "Error: mode in config.json must be 'web' or 'ssh'"
-    exit 1
-fi
+# Read config (optional fields with defaults)
+IMAGE=$(jq -r '.image // empty' "$CONFIG_FILE")
+IMAGE="${IMAGE:-ghcr.io/nod-ai/ossci-gitops/ossci-dev:main@sha256:4d76f74015ac2345ee17ef182921e00bc8d24feee39e36ae91906e2979e3c93e}"
+GPU_LIMIT=$(jq -r '.gpu_limit // "1"' "$CONFIG_FILE")
+DEV_USER_NAME=$(jq -r '.dev_user // "root"' "$CONFIG_FILE")
+DEV_UID=$(jq -r '.dev_uid // "0"' "$CONFIG_FILE")
+DEV_GID=$(jq -r '.dev_gid // "0"' "$CONFIG_FILE")
+HOME_DIR=$(jq -r '.home_dir // "/home/ossci"' "$CONFIG_FILE")
+LOCAL_SSH_PORT=$(jq -r '.local_ssh_port // "2222"' "$CONFIG_FILE")
+LOCAL_WEB_PORT=$(jq -r '.local_web_port // "8000"' "$CONFIG_FILE")
 
 YAML_TEMPLATE="${SCRIPT_DIR}/vscode-session-${MODE}.yml"
 
@@ -59,6 +75,10 @@ cleanup() {
         echo "Pod deleted successfully."
     else
         echo "Warning: Pod may have already been deleted or does not exist."
+    fi
+
+    if [[ "$MODE" == "ssh" ]]; then
+        kubectl delete secret "ssh-key-${POD_NAME}" -n "$NAMESPACE" --ignore-not-found 2>/dev/null || true
     fi
 
     rm -f "$TEMP_YAML"
@@ -87,18 +107,23 @@ if [[ "$MODE" == "ssh" ]]; then
     fi
     TMPDIR=$(mktemp -d)
     cp "$PUB_KEY_PATH" "$TMPDIR/authorized_keys"
-    SECRET_NAME="vscode-ssh-key-${USER}"
-    kubectl -n "$NAMESPACE" delete secret "$SECRET_NAME" --ignore-not-found
+    SECRET_NAME="ssh-key-${POD_NAME}"
     kubectl -n "$NAMESPACE" create secret generic "$SECRET_NAME" --from-file=authorized_keys="$TMPDIR/authorized_keys"
     rm -rf "$TMPDIR"
-    echo "✅ Created/updated SSH key secret in namespace '$NAMESPACE'."
+    echo "Created SSH key secret '$SECRET_NAME'."
 fi
 
-# Render YAML
+# Render YAML (use | as delimiter since image URLs contain /)
 echo "Preparing YAML from template: $YAML_TEMPLATE"
-sed -e "s/{{POD_NAME}}/${POD_NAME}/g" \
-    -e "s/{{PVC_CLAIM_NAME}}/${PVC_CLAIM_NAME}/g" \
-    -e "s/{{USER}}/${USER}/g" \
+echo "Using image: $IMAGE"
+sed -e "s|{{POD_NAME}}|${POD_NAME}|g" \
+    -e "s|{{PVC_CLAIM_NAME}}|${PVC_CLAIM_NAME}|g" \
+    -e "s|{{IMAGE}}|${IMAGE}|g" \
+    -e "s|{{GPU_LIMIT}}|${GPU_LIMIT}|g" \
+    -e "s|{{DEV_USER}}|${DEV_USER_NAME}|g" \
+    -e "s|{{DEV_UID}}|${DEV_UID}|g" \
+    -e "s|{{DEV_GID}}|${DEV_GID}|g" \
+    -e "s|{{HOME_DIR}}|${HOME_DIR}|g" \
     "$YAML_TEMPLATE" > "$TEMP_YAML"
 
 echo "Checking if pod '$POD_NAME' exists in namespace '$NAMESPACE'..."
@@ -110,39 +135,47 @@ fi
 echo "Applying '$TEMP_YAML' in namespace '$NAMESPACE'..."
 kubectl apply -f "$TEMP_YAML" -n "$NAMESPACE"
 
-echo "Waiting for pod '$POD_NAME' to be ready..."
+echo "Waiting for pod '$POD_NAME' to be running..."
 kubectl wait pod "$POD_NAME" -n "$NAMESPACE" --for=condition=Ready --timeout=300s
 
-echo "Pod is ready!"
-echo "Waiting for service to start..."
-
-# Start following logs in the background.
-kubectl logs --follow -n "$NAMESPACE" "$POD_NAME" &
-
 if [[ "$MODE" == "web" ]]; then
-    # Wait for VSCode web server port 9000
-    echo "Waiting for VSCode service on port $REMOTE_PORT..."
-    until kubectl exec -n "$NAMESPACE" "$POD_NAME" -- curl -fs http://localhost:$REMOTE_PORT/ >/dev/null 2>&1; do
-        echo "VSCode not ready yet, waiting..."
-        sleep 10
-    done
+    # Start following logs in the background.
+    kubectl logs --follow -n "$NAMESPACE" "$POD_NAME" &
+
     echo "VSCode is ready!"
-    echo "Starting port-forward from localhost:$LOCAL_PORT to pod:$REMOTE_PORT..."
-    echo "Access VSCode in your browser at: http://localhost:$LOCAL_PORT"
+    echo "Starting port-forward from localhost:$LOCAL_WEB_PORT to pod:$REMOTE_PORT..."
+    echo "Access VSCode in your browser at: http://localhost:$LOCAL_WEB_PORT"
     echo "Press Ctrl+C to stop and cleanup."
-    kubectl port-forward -n "$NAMESPACE" "$POD_NAME" "$LOCAL_PORT:$REMOTE_PORT"
+    kubectl port-forward -n "$NAMESPACE" "$POD_NAME" "$LOCAL_WEB_PORT:$REMOTE_PORT"
 else
-    # Wait for SSH daemon port 22
-    echo "Waiting for SSH service on port 22..."
+    # Run SSH setup inside the pod via kubectl exec.
+    # Pipes setup-ssh.sh into the pod — no ConfigMap needed.
+    echo "Setting up SSH inside the pod..."
+    kubectl exec -i -n "$NAMESPACE" "$POD_NAME" -- \
+        env DEV_USER="$DEV_USER_NAME" DEV_UID="$DEV_UID" DEV_GID="$DEV_GID" HOME_DIR="$HOME_DIR" \
+        bash < "${SCRIPT_DIR}/setup-ssh.sh"
+
+    # Wait for sshd to be listening on port 22
+    echo "Waiting for SSH daemon on port 22..."
     until kubectl exec -n "$NAMESPACE" "$POD_NAME" -- bash -c "timeout 1 bash -c '</dev/tcp/localhost/22'" 2>/dev/null; do
-        echo "SSH not ready yet, waiting..."
-        sleep 5
+        sleep 2
     done
+
+    echo "Setting up lsyncd inside the pod..."
+    kubectl exec -i -n "$NAMESPACE" "$POD_NAME" -- \
+        env DEV_USER="$DEV_USER_NAME" DEV_UID="$DEV_UID" DEV_GID="$DEV_GID" HOME_DIR="$HOME_DIR" \
+        bash < "${SCRIPT_DIR}/setup-lsync.sh"
+    echo "Waiting fo lsyncd process..."
+    until kubectl exec -n "$NAMESPACE" "$POD_NAME" -- bash -c "pgrep lsyncd >/dev/null" 2>/dev/null; do
+        sleep 2
+    done
+
     echo ""
-    echo "Starting port-forward (localhost:2222 -> pod:22)..."
+    echo "SSH daemon is ready!"
+    echo "Starting port-forward (localhost:$LOCAL_SSH_PORT -> pod:22)..."
     echo "Please make sure your ~/.ssh/config is setup as instructed in README"
     echo "Once active, open VS Code and select:"
-    echo "   ➜  'Remote-SSH: Connect to Host...'"
+    echo "   'Remote-SSH: Connect to Host...'"
     echo "Then choose:"
     echo "   ossci  "
     echo ""
@@ -151,5 +184,5 @@ else
     echo "Your SSH public key has already been added to the pod."
     echo "Press Ctrl+C to stop and clean up."
     echo ""
-    kubectl port-forward -n "$NAMESPACE" "$POD_NAME" 2222:22
+    kubectl port-forward -n "$NAMESPACE" "$POD_NAME" "$LOCAL_SSH_PORT:22"
 fi
