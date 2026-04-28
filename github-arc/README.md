@@ -48,4 +48,4 @@ Based on the requirements above, please provide a values file to the OSSCI team 
 
 ### Runner Scale Set Label
 
-Also, please provide a label that we can use for your scale set deployment. This is the label that we target for the runs-on field in github workflows as seen in [sample-workflow](test_gpu.yml)
+Also, please provide a label that we can use for your scale set deployment. This is the label that we target for the runs-on field in github workflows as seen in [sample-workflow](workflows/test_gpu.yml)
