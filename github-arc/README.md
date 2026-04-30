@@ -39,7 +39,7 @@ Please share the following GitHub App credentials with the OSSCI team (these wil
 4. What should be the minimum and maximum size of the scale set?
 5. Do your workflows use docker to run within container environments?
 6. Do your workflows require shared memory (`/dev/shm`) larger than the default 64MB? If yes, please specify the size needed (e.g., 16Gi, 50Gi).
-7. Do your workflows require persistent storage (PVC)? If yes, please specify the size, access mode (e.g., ReadWriteMany), and what it will be used for (e.g., model caching, Docker image caching, dataset storage).
+7. Do your workflows require persistent storage (PVC)? If yes, how much storage do you need?
 8. What is the GitHub organization URL the runners should be registered to? (e.g., `https://github.com/my-org`)
 9. Please provide an AD security group that we can grant `namespace-viewer` access to for monitoring your runner pods (view pods, events, logs). You can create a group at [mygroups.amd.com](https://mygroups.amd.com/AMDAD-Mygroups/). For details on RBAC setup, see [How to: Onboard a New ARC Runner](https://amd.atlassian.net/wiki/spaces/SHARK/pages/1184784884/How+to+Onboard+a+New+ARC+Runner).
 
