@@ -21,13 +21,15 @@ The OSSCI team will help setup the controller and scale set, but there are a few
 
 ### Authentication
 
-To create the connection so that our cluster can communicate with a GitHub Repository and register a runner scale set, the setup requires a GitHub App.
+To create the connection so that our cluster can communicate with a GitHub Repository and register a runner scale set, the setup requires a **GitHub App** (not a personal access token).
 More details along with permission scope requirements can be found here: https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners-with-actions-runner-controller/authenticating-to-the-github-api
 
-Please create a secret in your assigned namespace, so this authentication method can be used in kubernetes:
-```
-kubectl create secret generic pre-defined-rocm-secret    --namespace=<your-namespace>   --from-literal=github_app_id=<github-app-id>    --from-literal=github_app_installation_id=<github-app-installation-id>    --from-file=github_app_private_key=<path-to-your-github-app-private-pem-key>
-```
+Please share the following GitHub App credentials with the OSSCI team (these will be stored securely as a Kubernetes secret):
+- `github_app_id`
+- `github_app_installation_id`
+- `github_app_private_key` (PEM file)
+
+> **Note:** Please share the GitHub App credentials, not a personal access token (PAT). GitHub Apps provide scoped permissions and are the supported authentication method for ARC runner scale sets.
 
 ### GitHub Runner Requirements
 
@@ -36,6 +38,10 @@ kubectl create secret generic pre-defined-rocm-secret    --namespace=<your-names
 3. How many cpu cores should be allocated for each runner?
 4. What should be the minimum and maximum size of the scale set?
 5. Do your workflows use docker to run within container environments?
+6. Do your workflows require shared memory (`/dev/shm`) larger than the default 64MB? If yes, please specify the size needed (e.g., 16Gi, 50Gi).
+7. Do your workflows require persistent storage (PVC)? If yes, how much storage do you need?
+8. What is the GitHub organization URL the runners should be registered to? (e.g., `https://github.com/my-org`)
+9. Please provide an AD security group that we can grant `namespace-viewer` access to for monitoring your runner pods (view pods, events, logs). You can create a group at [mygroups.amd.com](https://mygroups.amd.com/AMDAD-Mygroups/). For details on RBAC setup, see [How to: Onboard a New ARC Runner](https://amd.atlassian.net/wiki/spaces/SHARK/pages/1184784884/How+to+Onboard+a+New+ARC+Runner).
 
 To answer 4, it is important to consider how long jobs that run on this cluster take and the frequency of these jobs.
 
